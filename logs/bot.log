@@ -1,0 +1,15 @@
+[21:36 - 12.10.2025] - INFO - Инициализация логирования успешна
+[21:36 - 12.10.2025] - INFO - Основные переменные успешно инициализированы
+[21:36 - 12.10.2025] - INFO - Подключение к vk_api успешно
+[21:36 - 12.10.2025] - INFO - Подключение к Google Sheets успешно
+[21:37 - 12.10.2025] - ERROR - Ошибка при выполнении команды #mem e: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "D:\Rybakov\src\services\handlers\posts.py", line 411, in handler_ls_messages
+    command["handler"](user_id, event)
+    ~~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+[21:40 - 12.10.2025] - INFO - Инициализация логирования успешна
+[21:40 - 12.10.2025] - INFO - Основные переменные успешно инициализированы
+[21:40 - 12.10.2025] - INFO - Подключение к vk_api успешно
+[21:40 - 12.10.2025] - INFO - Подключение к Google Sheets успешно
