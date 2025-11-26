@@ -293,6 +293,9 @@ class HandlerCommandsForPostsInChat:
                 response = self._wait_for_user_input(chat_id, message_id)
                 database.remove_personal_response_to_post(message_id)
 
+                database.remove_post_to_user(message_id, chat_id)
+                database.remove_post_from_db(message_id, chat_id)
+
                 if response:
                     general_func.sender(chat_id, f"Персональный ответ на пост #{message_id} был отправлен")
                     posts_inspection = database.get_posts_info()[2]
@@ -321,6 +324,9 @@ class HandlerCommandsForPostsInChat:
                 general_func.sender(chat_id, 'Пожалуйста, введите текст для персонального ответа, с маленькой буквы')
                 response = self._wait_for_user_input(chat_id, message_id)
                 database.remove_personal_response_to_post(message_id)
+
+                database.remove_post_to_user(message_id, chat_id)
+                database.remove_post_from_db(message_id, chat_id)
 
                 if response:
                     general_func.sender(chat_id, f'Персональный ответ на пост #{message_id} был отправлен')
