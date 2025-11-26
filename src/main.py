@@ -10,7 +10,7 @@ from vk_api.bot_longpoll import VkBotEventType
 from src.utils.logs import logging
 from api.vk.vk import VkConnection
 from src.services.handlers.events import HandlerEvents
-from src.services.handlers.chat_messages import HandlerChatMessages
+from services.handlers.chat_messages.controllers.chat_messages import HandlerChatMessages
 
 
 try:
