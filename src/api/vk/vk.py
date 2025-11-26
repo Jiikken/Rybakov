@@ -26,5 +26,3 @@ class VkConnection:
             logging.info(f"Подключение к vk_api успешно")
         except Exception as e:
             logging.critical(f"Ошибка при авторизации vk_api: {e}\n{traceback.format_exc()}")
-
-vk = VkConnection()

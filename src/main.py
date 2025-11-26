@@ -8,7 +8,7 @@ import threading
 from vk_api.bot_longpoll import VkBotEventType
 
 from src.utils.logs import logging
-from src.api.vk import VkConnection
+from api.vk.vk import VkConnection
 from src.services.handlers.events import HandlerEvents
 from src.services.handlers.chat_messages import HandlerChatMessages
 

@@ -5,7 +5,7 @@ import traceback
 from vk_api.bot_longpoll import VkBotEventType
 
 from src.api.google_sheets.posts import Posts
-from src.api.vk import vk
+from api.vk.vk import VkConnection
 from src.database.database import database
 from src.services.general_functions import general_func
 from src.utils.keyboards import create_buttons, create_buttons_ls, cheburek
@@ -369,7 +369,7 @@ class HandlerCommandsForPostsInChat:
         """Для персонального ответа"""
         start_time = time.time()
         while (time.time() - start_time) < timeout:
-            for event in vk.longpoll.listen():
+            for event in VkConnection.longpoll.listen():
                 if event.type == VkBotEventType.MESSAGE_NEW:
                     if event.from_chat and event.chat_id == chat_id:
                         user_id = event.message.get("from_id")
@@ -454,7 +454,7 @@ class HandlerCommandsForPostsInLS:
         try:
             # Загружаем фото на сервер ВК
             cheburk = "Rybakov/src/photos/чебурек.jpg"
-            photo = VkUpload(vk.vk_session).photo_messages(cheburk)[0]
+            photo = VkUpload(VkConnection.vk_session).photo_messages(cheburk)[0]
             attachment = f"photo{photo['owner_id']}_{photo['id']}"
 
             # Отправляем сообщение с фото
@@ -469,7 +469,7 @@ class HandlerCommandsForPostsInLS:
         try:
             # Загружаем фото на сервер ВК
             cheburk = "Rybakov/src/photos/дикий огурец.jpg"
-            photo = VkUpload(vk.vk_session).photo_messages(cheburk)[0]
+            photo = VkUpload(VkConnection.vk_session).photo_messages(cheburk)[0]
             attachment = f"photo{photo['owner_id']}_{photo['id']}"
 
             # Отправляем сообщение с фото

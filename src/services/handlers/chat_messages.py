@@ -5,7 +5,7 @@ import traceback
 from vk_api import ApiError
 
 from src.api.google_sheets.statistics import Statistics
-from src.api.vk import vk
+from api.vk.vk import VkConnection
 from src.database.database import database
 from src.services.general_functions import general_func
 from src.services.handlers.posts import HandlerCommandsForPostsInChat
@@ -135,7 +135,7 @@ class HandlerChatMessages:
 
         elif user_id is not None:
             try:
-                vk.vk_api.messages.removeChatUser(chat_id=chat_id, user_id=user_id)
+                VkConnection.vk_api.messages.removeChatUser(chat_id=chat_id, user_id=user_id)
             except ApiError as e:
                 if e.code == 15:
                     general_func.sender(chat_id, f"Пользователь является администратором в беседе")

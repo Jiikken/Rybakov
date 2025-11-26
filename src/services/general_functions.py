@@ -6,14 +6,14 @@ from typing import Optional
 from babel.dates import format_date
 from vk_api import ApiError
 
-from src.api.vk import vk
+from api.vk.vk import VkConnection
 from src.utils.logs import logging
 
 
 class GeneralFunctions:
     def sender(self, chat_id: int, text: str, mid: Optional[str] = None, keyboard: Optional[str] = None):
         try:
-            vk.vk_session.method('messages.send', {'chat_id': chat_id, 'message': text, 'random_id': 0, 'forward': mid, 'keyboard': keyboard})
+            VkConnection.vk_session.method('messages.send', {'chat_id': chat_id, 'message': text, 'random_id': 0, 'forward': mid, 'keyboard': keyboard})
         except ApiError as a:
             if a.code == 100:
                 self.sender(chat_id, f"Перешлите это сообщение Кириллу")
@@ -23,7 +23,7 @@ class GeneralFunctions:
 
     def sender_in_ls(self, user_id: int, text: str, mid: Optional[str] = None, keyboard: Optional[str] = None, attachment = None):
         try:
-            vk.vk_session.method('messages.send', {'user_id': user_id, 'message': text, 'random_id': 0, 'attachment': attachment, 'forward_messages': mid, 'keyboard': keyboard})
+            VkConnection.vk_session.method('messages.send', {'user_id': user_id, 'message': text, 'random_id': 0, 'attachment': attachment, 'forward_messages': mid, 'keyboard': keyboard})
         except Exception as e:
             self.sender(user_id, f"Произошла ошибка при обращении к методу")
             logging.error(f"Произошла ошибка при отправке сообщения(sender_in_ls): {e}\n{traceback.format_exc()}")
@@ -31,7 +31,7 @@ class GeneralFunctions:
     def resend_in_ls(self, chat_id: int, text: str, mid: Optional[str], keyboard = None):
         """resend message from ls"""
         try:
-            vk.vk_session.method('messages.send', {'chat_id': chat_id, 'message': text, 'random_id': 0, 'forward_messages': mid, 'keyboard': keyboard})
+            VkConnection.vk_session.method('messages.send', {'chat_id': chat_id, 'message': text, 'random_id': 0, 'forward_messages': mid, 'keyboard': keyboard})
         except Exception as e:
             self.sender(chat_id, f"Произошла ошибка при обращении к методу")
             logging.error(f"Произошла ошибка при отправке сообщения(resend_in_ls): {e}\n{traceback.format_exc()}")
@@ -61,7 +61,7 @@ class GeneralFunctions:
     def info_user(user_id):
         """Получение имени и фамилии пользователя"""
         try:
-            user_info = vk.vk_api.users.get(user_ids=user_id)[0]
+            user_info = VkConnection.vk_api.users.get(user_ids=user_id)[0]
             first_name = user_info['first_name']
             last_name = user_info['last_name']
         except Exception as e:
