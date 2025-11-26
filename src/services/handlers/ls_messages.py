@@ -1,6 +1,6 @@
 import traceback
 
-from src.api.google_sheets import google_sheets
+from src.api.google_sheets.posts import Posts
 from src.database.database import database
 from src.services.general_functions import general_func
 from src.utils.keyboards import create_buttons_ls
@@ -39,7 +39,7 @@ class HandlerLSMessages:
     @staticmethod
     def _handle_enter_post_in_ls(user_id, event, admin_chat = 1):
         """Отправка поста на проверку в ЛС"""
-        if google_sheets.inactive_user(user_id):
+        if Posts.inactive_user(user_id):
             general_func.sender_in_ls(user_id,
                          "На данный момент, я не могу рассмотреть от Вас материал, так как Вы находитесь в неактиве")
         else:
@@ -50,7 +50,7 @@ class HandlerLSMessages:
 
             database.add_post_to_user(message_id, user_id)
 
-            google_sheets.summ_posts(user_id)
+            Posts.summ_posts(user_id)
             database.add_post_to_db(message_id)
 
             general_func.resend_in_ls(admin_chat, f"Внимание! Новая идея для поста #{message_id}", message_id,

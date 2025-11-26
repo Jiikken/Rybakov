@@ -1,9 +1,12 @@
 import traceback
+import logging
+
 from contextlib import contextmanager
 from src.config import config
-from src.utils.logs import logging
+
 import sqlite3
 from typing import Optional, List, Tuple
+
 from src.services.general_functions import general_func
 
 class DataBase:

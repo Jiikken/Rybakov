@@ -4,7 +4,7 @@ import traceback
 
 from vk_api import ApiError
 
-from src.api.google_sheets import google_sheets
+from src.api.google_sheets.statistics import Statistics
 from src.api.vk import vk
 from src.database.database import database
 from src.services.general_functions import general_func
@@ -148,7 +148,7 @@ class HandlerChatMessages:
     @staticmethod
     def _reset_stats(chat_id):
         """Обнуление статистики редакторов"""
-        google_sheets.reset_redactors_statistics(chat_id)
+        Statistics.reset_redactors_statistics(chat_id)
 
     @staticmethod
     def _add_admin(chat_id, msg, event):
@@ -200,15 +200,15 @@ class HandlerChatMessages:
 
     @staticmethod
     def _redactors_statistics(msg, chat_id):
-        google_sheets.redactors_statistics(msg, chat_id)
+        Statistics.redactors_statistics(msg, chat_id)
 
     @staticmethod
     def _redactors_statistics_for_admins(chat_id):
-        google_sheets.redactors_statistics_for_admins(chat_id)
+        Statistics.redactors_statistics_for_admins(chat_id)
 
     @staticmethod
     def _info_posts_per_month(chat_id):
-        google_sheets.info_posts_per_month(chat_id)
+        Statistics.info_posts_per_month(chat_id)
 
     @staticmethod
     def thread_info_posts():

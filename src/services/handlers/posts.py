@@ -4,7 +4,7 @@ import traceback
 
 from vk_api.bot_longpoll import VkBotEventType
 
-from src.api.google_sheets import google_sheets
+from src.api.google_sheets.posts import Posts
 from src.api.vk import vk
 from src.database.database import database
 from src.services.general_functions import general_func
@@ -163,7 +163,7 @@ class HandlerCommandsForPostsInChat:
                         database.change_approved_posts(chat_id, True)
 
                 user_id = database.get_user_by_post(message_id, chat_id)
-                google_sheets.summ_approved_posts(user_id, chat_id)
+                Posts.summ_approved_posts(user_id, chat_id)
 
                 database.remove_post_to_user(message_id, chat_id)
                 database.remove_post_from_db(message_id, chat_id)
@@ -197,7 +197,7 @@ class HandlerCommandsForPostsInChat:
 
                 user_id = database.get_user_by_post(message_id)
 
-                google_sheets.summ_approved_posts(user_id, chat_id)
+                Posts.summ_approved_posts(user_id, chat_id)
 
                 database.remove_post_to_user(message_id, chat_id)
                 database.remove_post_from_db(message_id, chat_id)
@@ -345,7 +345,7 @@ class HandlerCommandsForPostsInChat:
 
     @staticmethod
     def _enter_post(chat_id, user_id, event, content_chat = 5, admin_chat = 1):
-        if google_sheets.inactive_user(user_id, chat_id):
+        if Posts.inactive_user(user_id, chat_id):
             general_func.sender(chat_id,
                    "На данный момент, я не могу рассмотреть от Вас материал, так как Вы находитесь в неактиве")
         else:
@@ -356,7 +356,7 @@ class HandlerCommandsForPostsInChat:
 
             database.add_post_to_user(message_id, user_id, chat_id)
 
-            google_sheets.summ_posts(user_id, chat_id)
+            Posts.summ_posts(user_id, chat_id)
             database.add_post_to_db(message_id, chat_id)
 
             database.change_posts_inspection(True, chat_id)
@@ -428,7 +428,7 @@ class HandlerCommandsForPostsInLS:
     @staticmethod
     def _handle_enter_post_in_ls(user_id, event, admin_chat = 1):
         """Отправка поста на проверку в ЛС"""
-        if google_sheets.inactive_user(user_id):
+        if Posts.inactive_user(user_id):
             general_func.sender_in_ls(user_id,
                          "На данный момент, я не могу рассмотреть от Вас материал, так как Вы находитесь в неактиве")
         else:
@@ -439,7 +439,7 @@ class HandlerCommandsForPostsInLS:
 
             database.add_post_to_user(message_id, user_id)
 
-            google_sheets.summ_posts(user_id)
+            Posts.summ_posts(user_id)
             database.add_post_to_db(message_id)
 
             database.change_posts_inspection(True)
