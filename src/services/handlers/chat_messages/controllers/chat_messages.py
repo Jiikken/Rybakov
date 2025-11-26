@@ -3,7 +3,7 @@ import traceback
 
 from src.database.operations.admins import Admins
 from src.services.general_functions import general_func
-from src.services.handlers.posts import HandlerCommandsForPostsInChat
+from src.services.handlers.posts.chat.controllers.posts import HandlerCommandsForPostsInChat
 from src.services.handlers.chat_messages.commands import CommandsInChat
 
 

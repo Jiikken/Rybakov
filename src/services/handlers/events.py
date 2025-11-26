@@ -2,7 +2,7 @@ import traceback
 
 from src.utils.logs import logging
 from services.handlers.chat_messages.controllers.chat_messages import HandlerChatMessages
-from src.services.handlers.ls_messages import HandlerLSMessages
+from services.handlers.ls_messages.controllers.ls_messages import HandlerLSMessages
 
 handler_chat_messages = HandlerChatMessages()
 handler_ls_messages = HandlerLSMessages()
