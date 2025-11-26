@@ -4,9 +4,10 @@ import traceback
 
 from vk_api.bot_longpoll import VkBotEventType
 
-from src.api.google_sheets.posts import Posts
 from api.vk.vk import VkConnection
-from src.database.database import database
+from src.database.operations.posts import Posts as PostsDataBase
+from src.api.google_sheets.posts import Posts as PostsGoogleSheets
+from src.database.operations.post_and_user import PostAndUser as PostAndUser
 from src.services.general_functions import general_func
 from src.utils.keyboards import create_buttons, create_buttons_ls, cheburek
 from src.utils.logs import logging
@@ -148,25 +149,25 @@ class HandlerCommandsForPostsInChat:
         message_id = general_func.get_post_id_from_message(chat_id, msg)
 
         if message_id > 0:
-            if str(message_id) not in database.get_no_check_posts_list():
+            if str(message_id) not in PostsDataBase.get_no_check_posts_list():
                 general_func.sender(chat_id, f"Пост #{message_id} уже проверен")
 
             elif message_id:
                 general_func.sender(chat_id, f"Пост #{message_id} был одобрен")
 
-                posts_inspection = database.get_posts_info()[2]
-                posts = database.get_posts_info()[0]
+                posts_inspection = PostsDataBase.get_posts_info()[2]
+                posts = PostsDataBase.get_posts_info()[0]
                 if posts_inspection:
                     if posts_inspection > 0:
-                        database.change_posts_inspection(False, chat_id)
+                        PostsDataBase.change_posts_inspection(False, chat_id)
                     if posts > 0:
-                        database.change_approved_posts(chat_id, True)
+                        PostsDataBase.change_approved_posts(chat_id, True)
 
-                user_id = database.get_user_by_post(message_id, chat_id)
-                Posts.summ_approved_posts(user_id, chat_id)
+                user_id = PostAndUser.get_user_by_post(message_id, chat_id)
+                PostsGoogleSheets.summ_approved_posts(user_id, chat_id)
 
-                database.remove_post_to_user(message_id, chat_id)
-                database.remove_post_from_db(message_id, chat_id)
+                PostAndUser.remove_post_to_user(message_id, chat_id)
+                PostsDataBase.remove_post_from_db(message_id, chat_id)
 
                 general_func.sender(content_chat,
                        f"Пост #{message_id} был одобрен!\n\nВ ближайшее время он будет опубликован",
@@ -181,26 +182,26 @@ class HandlerCommandsForPostsInChat:
         message_id = general_func.get_post_id_from_message(chat_id, msg)
 
         if message_id > 0:
-            if str(message_id) not in database.get_no_check_posts_list():
+            if str(message_id) not in PostsDataBase.get_no_check_posts_list():
                 general_func.sender(chat_id, f"Пост #{message_id} уже проверен")
 
             elif message_id:
                 general_func.sender(chat_id, f"Пост #{message_id} был одобрен")
 
-                posts_inspection = database.get_posts_info()[2]
-                posts = database.get_posts_info()[0]
+                posts_inspection = PostsDataBase.get_posts_info()[2]
+                posts = PostsDataBase.get_posts_info()[0]
                 if posts_inspection:
                     if posts_inspection > 0:
-                        database.change_posts_inspection(False)
+                        PostsDataBase.change_posts_inspection(False)
                     if posts > 0:
-                        database.change_approved_posts(chat_id, True)
+                        PostsDataBase.change_approved_posts(chat_id, True)
 
-                user_id = database.get_user_by_post(message_id)
+                user_id = PostAndUser.get_user_by_post(message_id)
 
-                Posts.summ_approved_posts(user_id, chat_id)
+                PostsGoogleSheets.summ_approved_posts(user_id, chat_id)
 
-                database.remove_post_to_user(message_id, chat_id)
-                database.remove_post_from_db(message_id, chat_id)
+                PostAndUser.remove_post_to_user(message_id, chat_id)
+                PostsDataBase.remove_post_from_db(message_id, chat_id)
 
                 general_func.sender_in_ls(user_id,
                              f"Пост #{message_id} был одобрен!\n\nВ ближайшее время он будет опубликован",
@@ -215,18 +216,18 @@ class HandlerCommandsForPostsInChat:
         message_id = general_func.get_post_id_from_message(chat_id, msg)
 
         if message_id > 0:
-            if str(message_id) not in database.get_no_check_posts_list():
+            if str(message_id) not in PostsDataBase.get_no_check_posts_list():
                 general_func.sender(chat_id, f"Пост #{message_id} уже проверен")
 
             else:
                 general_func.sender(chat_id, f"Пост #{message_id} был отказан")
-                posts_inspection = database.get_posts_info()[2]
+                posts_inspection = PostsDataBase.get_posts_info()[2]
 
                 if posts_inspection > 0:
-                    database.change_posts_inspection(False, chat_id)
+                    PostsDataBase.change_posts_inspection(False, chat_id)
 
-                database.remove_post_to_user(message_id, chat_id)
-                database.remove_post_from_db(message_id, chat_id)
+                PostAndUser.remove_post_to_user(message_id, chat_id)
+                PostsDataBase.remove_post_from_db(message_id, chat_id)
 
                 if type == 1:
                     general_func.sender(content_chat,
@@ -249,20 +250,20 @@ class HandlerCommandsForPostsInChat:
         message_id = general_func.get_post_id_from_message(chat_id, msg)
 
         if message_id > 0:
-            if str(message_id) not in database.get_no_check_posts_list():
+            if str(message_id) not in PostsDataBase.get_no_check_posts_list():
                 general_func.sender(chat_id, f"Пост #{message_id} уже проверен")
 
             else:
                 general_func.sender(chat_id, f"Пост #{message_id} был отказан")
-                posts_inspection = database.get_posts_info()[2]
+                posts_inspection = PostsDataBase.get_posts_info()[2]
 
                 if posts_inspection > 0:
-                    database.change_posts_inspection(False)
+                    PostsDataBase.change_posts_inspection(False)
 
-                user_id = database.get_user_by_post(message_id)
+                user_id = PostAndUser.get_user_by_post(message_id)
 
-                database.remove_post_to_user(message_id, chat_id)
-                database.remove_post_from_db(message_id, chat_id)
+                PostAndUser.remove_post_to_user(message_id, chat_id)
+                PostsDataBase.remove_post_from_db(message_id, chat_id)
 
                 if type == 1:
                     general_func.sender_in_ls(user_id,
@@ -282,26 +283,26 @@ class HandlerCommandsForPostsInChat:
 
     def _personal_response_for_chat(self, chat_id, msg, user_id, content_chat = 5):
         message_id = general_func.get_post_id_from_message_for_personal_response(chat_id, msg)
-        database.add_personal_response_to_post(message_id, user_id)
+        PostAndUser.add_personal_response_to_post(message_id, user_id)
 
         if message_id > 0:
-            if str(message_id) not in database.get_no_check_posts_list():
+            if str(message_id) not in PostsDataBase.get_no_check_posts_list():
                 general_func.sender(chat_id, f"Пост #{message_id} уже проверен")
 
             elif message_id:
                 general_func.sender(chat_id, 'Пожалуйста, введите текст для персонального ответа, с маленькой буквы')
                 response = self._wait_for_user_input(chat_id, message_id)
-                database.remove_personal_response_to_post(message_id)
+                PostAndUser.remove_personal_response_to_post(message_id)
 
-                database.remove_post_to_user(message_id, chat_id)
-                database.remove_post_from_db(message_id, chat_id)
+                PostAndUser.remove_post_to_user(message_id, chat_id)
+                PostsDataBase.remove_post_from_db(message_id, chat_id)
 
                 if response:
                     general_func.sender(chat_id, f"Персональный ответ на пост #{message_id} был отправлен")
-                    posts_inspection = database.get_posts_info()[2]
+                    posts_inspection = PostsDataBase.get_posts_info()[2]
 
                     if posts_inspection > 0:
-                        database.change_posts_inspection(False, chat_id)
+                        PostsDataBase.change_posts_inspection(False, chat_id)
 
                     midd = json.dumps(
                         {"peer_id": 2000000000 + content_chat, "conversation_message_ids": message_id,
@@ -314,28 +315,28 @@ class HandlerCommandsForPostsInChat:
 
     def _personal_response_for_ls(self, chat_id, msg, user_id):
         message_id = general_func.get_post_id_from_message_for_personal_response(chat_id, msg)
-        database.add_personal_response_to_post(message_id, user_id)
+        PostAndUser.add_personal_response_to_post(message_id, user_id)
 
         if message_id > 0:
-            if str(message_id) not in database.get_no_check_posts_list():
+            if str(message_id) not in PostsDataBase.get_no_check_posts_list():
                 general_func.sender(chat_id, f"Пост #{message_id} уже проверен")
 
             elif message_id:
                 general_func.sender(chat_id, 'Пожалуйста, введите текст для персонального ответа, с маленькой буквы')
                 response = self._wait_for_user_input(chat_id, message_id)
-                database.remove_personal_response_to_post(message_id)
+                PostAndUser.remove_personal_response_to_post(message_id)
 
-                database.remove_post_to_user(message_id, chat_id)
-                database.remove_post_from_db(message_id, chat_id)
+                PostAndUser.remove_post_to_user(message_id, chat_id)
+                PostsDataBase.remove_post_from_db(message_id, chat_id)
 
                 if response:
                     general_func.sender(chat_id, f'Персональный ответ на пост #{message_id} был отправлен')
-                    posts_inspection = database.get_posts_info()[2]
+                    posts_inspection = PostsDataBase.get_posts_info()[2]
 
                     if posts_inspection > 0:
-                        database.change_posts_inspection(False)
+                        PostsDataBase.change_posts_inspection(False)
 
-                    user_id = database.get_user_by_post(message_id)
+                    user_id = PostAndUser.get_user_by_post(message_id)
 
                     general_func.sender_in_ls(user_id,
                                  f"Проверяющий дал персональный ответ на пост #{message_id}: {response}",
@@ -345,7 +346,7 @@ class HandlerCommandsForPostsInChat:
 
     @staticmethod
     def _enter_post(chat_id, user_id, event, content_chat = 5, admin_chat = 1):
-        if Posts.inactive_user(user_id, chat_id):
+        if PostsGoogleSheets.inactive_user(user_id, chat_id):
             general_func.sender(chat_id,
                    "На данный момент, я не могу рассмотреть от Вас материал, так как Вы находитесь в неактиве")
         else:
@@ -354,13 +355,13 @@ class HandlerCommandsForPostsInChat:
                 {"peer_id": 2000000000 + content_chat, "conversation_message_ids": message_id, "is_reply": False})
             general_func.sender(chat_id, f"Пост отправлен на рассмотрение под номером #{message_id}", midd)
 
-            database.add_post_to_user(message_id, user_id, chat_id)
+            PostAndUser.add_post_to_user(message_id, user_id, chat_id)
 
-            Posts.summ_posts(user_id, chat_id)
-            database.add_post_to_db(message_id, chat_id)
+            PostsGoogleSheets.summ_posts(user_id, chat_id)
+            PostsDataBase.add_post_to_db(message_id, chat_id)
 
-            database.change_posts_inspection(True, chat_id)
-            database.change_posts(True, chat_id)
+            PostsDataBase.change_posts_inspection(True, chat_id)
+            PostsDataBase.change_posts(True, chat_id)
 
             general_func.sender(admin_chat, f"Внимание! Новая идея для поста #{message_id}", midd, keyboard=create_buttons(message_id))
 
@@ -373,7 +374,7 @@ class HandlerCommandsForPostsInChat:
                 if event.type == VkBotEventType.MESSAGE_NEW:
                     if event.from_chat and event.chat_id == chat_id:
                         user_id = event.message.get("from_id")
-                        if user_id == database.get_admin_id_by_response_post(message_id):
+                        if user_id == PostAndUser.get_admin_id_by_response_post(message_id):
                             user_response = event.object.message['text']
                             return user_response
 
@@ -428,7 +429,7 @@ class HandlerCommandsForPostsInLS:
     @staticmethod
     def _handle_enter_post_in_ls(user_id, event, admin_chat = 1):
         """Отправка поста на проверку в ЛС"""
-        if Posts.inactive_user(user_id):
+        if PostsGoogleSheets.inactive_user(user_id):
             general_func.sender_in_ls(user_id,
                          "На данный момент, я не могу рассмотреть от Вас материал, так как Вы находитесь в неактиве")
         else:
@@ -437,13 +438,13 @@ class HandlerCommandsForPostsInLS:
 
             general_func.sender_in_ls(user_id, f"Пост отправлен на рассмотрение под номером #{message_id}", message_id)
 
-            database.add_post_to_user(message_id, user_id)
+            PostAndUser.add_post_to_user(message_id, user_id)
 
-            Posts.summ_posts(user_id)
-            database.add_post_to_db(message_id)
+            PostsGoogleSheets.summ_posts(user_id)
+            PostsDataBase.add_post_to_db(message_id)
 
-            database.change_posts_inspection(True)
-            database.change_posts(True)
+            PostsDataBase.change_posts_inspection(True)
+            PostsDataBase.change_posts(True)
 
             general_func.resend_in_ls(admin_chat, f"Внимание! Новая идея для поста #{message_id}", message_id,
                          keyboard=create_buttons_ls(message_id))

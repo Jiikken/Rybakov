@@ -6,7 +6,8 @@ from vk_api import ApiError
 
 from src.api.google_sheets.statistics import Statistics
 from api.vk.vk import VkConnection
-from src.database.database import database
+from src.database.operations.admins import Admins
+from src.database.operations.posts import Posts
 from src.services.general_functions import general_func
 from src.services.handlers.posts import HandlerCommandsForPostsInChat
 
@@ -92,7 +93,7 @@ class HandlerChatMessages:
         if forward_command:
             command = self.strict_commands.get(forward_command) or self.not_strict_commands.get(forward_command)
 
-            if command["admin_only"] and str(user_id) not in str(database.get_admins_list()):
+            if command["admin_only"] and str(user_id) not in str(Admins.get_admins_list()):
                 general_func.sender(chat_id, f"У Вас нет доступа к этой команде")
 
             else:
@@ -130,7 +131,7 @@ class HandlerChatMessages:
         """Кик пользователя"""
         user_id = general_func.give_user_id(chat_id, msg, event)
 
-        if user_id in database.get_admins_list():
+        if user_id in Admins.get_admins_list():
             general_func.sender(chat_id, "Этот пользователь является администратором")
 
         elif user_id is not None:
@@ -154,10 +155,10 @@ class HandlerChatMessages:
     def _add_admin(chat_id, msg, event):
         user_id = general_func.give_user_id(chat_id, msg, event)
 
-        if database.add_admin_to_db(user_id, chat_id) and user_id is not None:
+        if Admins.add_admin_to_db(user_id, chat_id) and user_id is not None:
             general_func.sender(chat_id, f"{general_func.info_user(user_id)} добавлен(а) в список администраторов")
 
-        elif user_id in database.get_admins_list() and user_id is not None:
+        elif user_id in Admins.get_admins_list() and user_id is not None:
             general_func.sender(chat_id, f"{general_func.info_user(user_id)} уже есть в списке администраторов")
 
     @staticmethod
@@ -165,16 +166,16 @@ class HandlerChatMessages:
         """Удаление администратора (/deladm)"""
         user_id = general_func.give_user_id(chat_id, msg, event)
 
-        if database.remove_admin_from_db(user_id, chat_id) and user_id is not None:
+        if Admins.remove_admin_from_db(user_id, chat_id) and user_id is not None:
             general_func.sender(chat_id, f"{general_func.info_user(user_id)} вынесен(а) из списка администраторов")
 
-        elif user_id not in database.get_admins_list() and user_id is not None:
+        elif user_id not in Admins.get_admins_list() and user_id is not None:
             general_func.sender(chat_id, f"{general_func.info_user(user_id)} не найден(а) в списке администратора")
 
     @staticmethod
     def _admins_list(chat_id):
         start_label = f"Список администрации:\n\n"
-        for cell in database.get_admins_list():
+        for cell in Admins.get_admins_list():
             if cell is None:
                 continue
             elif cell.strip():
@@ -185,9 +186,9 @@ class HandlerChatMessages:
     @staticmethod
     def _no_check_posts(chat_id):
         """Непроверенные посты (/posts)"""
-        if database.get_no_check_posts_list():
+        if Posts.get_no_check_posts_list():
             ip = ""
-            for i in database.get_no_check_posts_list():
+            for i in Posts.get_no_check_posts_list():
                 ip += f" #{i}"
             general_func.sender(chat_id, f"Непроверенные посты:{ip}")
         else:
@@ -195,7 +196,7 @@ class HandlerChatMessages:
 
     @staticmethod
     def _info_posts_per_day(chat_id):
-        posts, approved_posts, posts_inspection = database.get_posts_info()
+        posts, approved_posts, posts_inspection = Posts.get_posts_info()
         general_func.info_posts(posts, approved_posts, posts_inspection, chat_id)
 
     @staticmethod
@@ -215,10 +216,10 @@ class HandlerChatMessages:
         while True:
             current_time = time.localtime()
             if current_time.tm_hour == 21 and current_time.tm_min == 0:
-                posts, approved_posts, posts_inspection = database.get_posts_info()
+                posts, approved_posts, posts_inspection = Posts.get_posts_info()
                 try:
                     general_func.info_posts(posts, posts_inspection, approved_posts, 6)
-                    database.reset_posts_info()
+                    Posts.reset_posts_info()
                 except Exception as e:
                     general_func.sender(2, f"Ошибка при обращении к методу: {e}")
                     logging.error(
