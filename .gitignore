@@ -1,2 +1,4 @@
 /secrets/
 secrets/.env
+.db
+/src/config.py

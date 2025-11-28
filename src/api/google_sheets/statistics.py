@@ -3,7 +3,7 @@ import traceback
 from datetime import datetime
 from typing import Optional
 
-from src.services.general_functions import GeneralFunctions
+from src.services.models.senders import Senders
 from src.api.google_sheets.init import GoogleSheets
 
 
@@ -22,13 +22,13 @@ class Statistics(GoogleSheets):
                 try:
                     select_days = int(msg.split(" ")[1])
                     if select_days > days_since_restart:
-                        GeneralFunctions.sender(chat_id, f"Информации за этот период ещё нет (максимум дней: {days_since_restart})")
+                        Senders.sender(chat_id, f"Информации за этот период ещё нет (максимум дней: {days_since_restart})")
                         return
                     if select_days < 0:
-                        GeneralFunctions.sender(chat_id, f"Не могу показать информацию за минусовой период")
+                        Senders.sender(chat_id, f"Не могу показать информацию за минусовой период")
                         return
                 except ValueError:
-                    GeneralFunctions.sender(chat_id, "Не могу отправить статистику за данный период")
+                    Senders.sender(chat_id, "Не могу отправить статистику за данный период")
                     return
             else:
                 select_days = days_since_restart
@@ -92,10 +92,10 @@ class Statistics(GoogleSheets):
                             else:
                                 statistics += f"[id{redactor_id}|{redactors_names[index]}] — [ {posts_count} ]\n"
 
-            GeneralFunctions.sender(chat_id, statistics)
+            Senders.sender(chat_id, statistics)
 
         except Exception as e:
-            GeneralFunctions.sender(chat_id, f"Произошла ошибка при обращении к методу")
+            Senders.sender(chat_id, f"Произошла ошибка при обращении к методу")
             logging.error(f"Ошибка при получении статистики редакторов: {e}\n{traceback.format_exc()}")
 
     def redactors_statistics_for_admins(self, chat_id: int) -> None:
@@ -134,9 +134,9 @@ class Statistics(GoogleSheets):
                         else:
                             statistics += f"[id{subscriber_id}|{redactors_names[index]}] — [ {ap} | {pp} | {pap} ]\n"
 
-            GeneralFunctions.sender(chat_id, statistics)
+            Senders.sender(chat_id, statistics)
         except Exception as e:
-            GeneralFunctions.sender(chat_id, f"Произошла ошибка при обращении к методу")
+            Senders.sender(chat_id, f"Произошла ошибка при обращении к методу")
             logging.error(f"Ошибка при получении статистики редакторов для администрации: {e}\n{traceback.format_exc()}")
 
     def reset_redactors_statistics(self, chat_id: int) -> None:
@@ -154,9 +154,9 @@ class Statistics(GoogleSheets):
             redactors_work_sheet.batch_clear(["G2:G"])
             stability.batch_clear(["C2:AF"])
 
-            GeneralFunctions.sender(chat_id, "Статистика обнулена")
+            Senders.sender(chat_id, "Статистика обнулена")
         except Exception as e:
-            GeneralFunctions.sender(chat_id, f"Произошла ошибка при обращении к методу")
+            Senders.sender(chat_id, f"Произошла ошибка при обращении к методу")
             logging.error(f"Ошибка при сбросе статистики: {e}\n{traceback.format_exc()}")
 
     

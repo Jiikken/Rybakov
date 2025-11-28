@@ -1,7 +1,7 @@
 import logging
 import traceback
 
-from src.services.general_functions import GeneralFunctions
+from src.services.models.senders import Senders
 from src.api.google_sheets.init import GoogleSheets
 
 
@@ -30,7 +30,7 @@ class Posts(GoogleSheets):
                                 stats_for_select_days.update_cell(index + 2, int(i) + 2, new_value)
 
         except Exception as e:
-            GeneralFunctions.sender(chat_id, f"Произошла ошибка при обращении к методу")
+            Senders.sender(chat_id, f"Произошла ошибка при обращении к методу")
             logging.error(f"Ошибка при суммировании поста: {e}\n{traceback.format_exc()}")
 
     def summ_approved_posts(self, user_id, chat_id):
@@ -53,7 +53,7 @@ class Posts(GoogleSheets):
 
                     break
         except Exception as e:
-            GeneralFunctions.sender(chat_id, f"Произошла ошибка при обращении к методу")
+            Senders.sender(chat_id, f"Произошла ошибка при обращении к методу")
             logging.error(f"Ошибка при суммировании одобренного поста: {e}\n{traceback.format_exc()}")
 
     def info_posts_per_month(self, chat_id: int):
@@ -69,9 +69,9 @@ class Posts(GoogleSheets):
             photo_mat = bot_sheet.acell("B28").value
             video_mat = bot_sheet.acell("B29").value
 
-            GeneralFunctions.sender(chat_id, f"Количество опубликованных постов за следующее количество дней: {days_since_reset_stats}, с момента последнего сброса статистики ({date_reset_stats}) — {posts_public_now} из {all_posts_public} ({percent_public_posts}%)\n\nФотоматериал: {photo_mat}\nВидеоматериал: {video_mat}")
+            Senders.sender(chat_id, f"Количество опубликованных постов за следующее количество дней: {days_since_reset_stats}, с момента последнего сброса статистики ({date_reset_stats}) — {posts_public_now} из {all_posts_public} ({percent_public_posts}%)\n\nФотоматериал: {photo_mat}\nВидеоматериал: {video_mat}")
         except Exception as e:
-            GeneralFunctions.sender(chat_id, f"Произошла ошибка при обращении к методу")
+            Senders.sender(chat_id, f"Произошла ошибка при обращении к методу")
             logging.error(f"Ошибка при получении информации постов за месяц: {e}\n{traceback.format_exc()}")
 
     def inactive_user(self, user_id: int, chat_id: int = 2) -> bool:
@@ -94,6 +94,6 @@ class Posts(GoogleSheets):
                     else:
                         return False
         except Exception as e:
-            GeneralFunctions.sender(chat_id, f"Произошла ошибка при обращении к методу")
+            Senders.sender(chat_id, f"Произошла ошибка при обращении к методу")
             logging.error(f"Ошибка при получении информации о неактиве у пользователя: {e}\n{traceback.format_exc()}")
     

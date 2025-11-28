@@ -18,6 +18,6 @@ try:
 
     for event in VkConnection.longpoll.listen():
         if event.type == VkBotEventType.MESSAGE_NEW:
-            HandlerEvents(event).handler_event(event)
+            HandlerEvents.handler_event()
 except Exception as e:
     logging.critical(f"Произошла ошибка в основном потоке событий: {e}\n{traceback.format_exc()}")

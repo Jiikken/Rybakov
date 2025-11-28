@@ -2,7 +2,7 @@ import traceback
 
 from api.vk.vk import VkConnection
 from src.database.operations.post_and_user import PostAndUser as PostAndUser
-from src.services.general_functions import general_func
+from src.services.models.senders import Senders
 from src.utils.logs import logging
 from vk_api.upload import VkUpload
 
@@ -18,9 +18,9 @@ class SendImagesModel:
             attachment = f"photo{photo['owner_id']}_{photo['id']}"
 
             # Отправляем сообщение с фото
-            general_func.sender_in_ls(user_id, "Держите чебурек🥟", attachment=attachment)
+            Senders.sender_in_ls(user_id, "Держите чебурек🥟", attachment=attachment)
         except Exception as e:
-            general_func.sender_in_ls(user_id, "Чебуреки кончились😢")
+            Senders.sender_in_ls(user_id, "Чебуреки кончились😢")
             logging.warning(f"Чебурек: {e}\n{traceback.format_exc()}")
 
     @staticmethod
@@ -33,7 +33,7 @@ class SendImagesModel:
             attachment = f"photo{photo['owner_id']}_{photo['id']}"
 
             # Отправляем сообщение с фото
-            general_func.sender_in_ls(user_id, "😱", attachment=attachment)
+            Senders.sender_in_ls(user_id, "😱", attachment=attachment)
         except Exception as e:
-            general_func.sender_in_ls(user_id, "😢")
+            Senders.sender_in_ls(user_id, "😢")
             logging.warning(f"Дикий огурец: {e}\n{traceback.format_exc()}")

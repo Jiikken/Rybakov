@@ -1,22 +1,22 @@
 from src.database.operations.posts import Posts as PostsDataBase
 from src.api.google_sheets.posts import Posts as PostsGoogleSheets
 from src.database.operations.post_and_user import PostAndUser as PostAndUser
-from src.services.general_functions import general_func
-from src.utils.keyboards import create_buttons_ls
+from src.services.models.senders import Senders
+from src.utils.keyboards import Keyboards
 
 
 class PostsModel:
     @staticmethod
-    def _handle_enter_post_in_ls(user_id, event, admin_chat = 1):
+    def handle_enter_post_in_ls(user_id, event, admin_chat = 1):
         """Отправка поста на проверку в ЛС"""
         if PostsGoogleSheets.inactive_user(user_id):
-            general_func.sender_in_ls(user_id,
+            Senders.sender_in_ls(user_id,
                          "На данный момент, я не могу рассмотреть от Вас материал, так как Вы находитесь в неактиве")
         else:
             user_id = event.message.get("from_id")
             message_id = event.message.get("id")
 
-            general_func.sender_in_ls(user_id, f"Пост отправлен на рассмотрение под номером #{message_id}", message_id)
+            Senders.sender_in_ls(user_id, f"Пост отправлен на рассмотрение под номером #{message_id}", message_id)
 
             PostAndUser.add_post_to_user(message_id, user_id)
 
@@ -26,5 +26,5 @@ class PostsModel:
             PostsDataBase.change_posts_inspection(True)
             PostsDataBase.change_posts(True)
 
-            general_func.resend_in_ls(admin_chat, f"Внимание! Новая идея для поста #{message_id}", message_id,
-                         keyboard=create_buttons_ls(message_id))
+            Senders.resend_in_ls(admin_chat, f"Внимание! Новая идея для поста #{message_id}", message_id,
+                         keyboard=Keyboards.create_buttons_ls(message_id))

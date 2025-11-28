@@ -1,10 +1,10 @@
 import traceback
 
 from src.database.operations.post_and_user import PostAndUser as PostAndUser
-from src.services.general_functions import general_func
+from src.services.models.senders import Senders
 from src.utils.logs import logging
 from src.services.handlers.posts.commands import CommandsPosts
-from src.services.handlers.posts.chat.models.processing_posts import CommandsModel
+from src.services.handlers.posts.chat.check_posts.processing_posts import CommandsModel
 
 
 class HandlerCommandsForPostsInChat(CommandsPosts):
@@ -40,15 +40,15 @@ class HandlerCommandsForPostsInChat(CommandsPosts):
                 try:
                     command["handler"](**params)
                 except Exception as e:
-                    general_func.sender(chat_id, f"Произошла ошибка при выполнении команды")
+                    Senders.sender(chat_id, f"Произошла ошибка при выполнении команды")
                     logging.error(f"Ошибка в команде {msg}: {e}\n{traceback.format_exc()}")
 
             elif not command["admin_only"] and chat_id == 5:
                 try:
                     CommandsModel.enter_post(chat_id, user_id, event)
                 except Exception as e:
-                    general_func.sender(chat_id, f"Произошла ошибка при выполнении команды")
+                    Senders.sender(chat_id, f"Произошла ошибка при выполнении команды")
                     logging.error(f"Произошла ошибка при отправке поста на проверку: {e}\n{traceback.format_exc()}")
 
             elif not command["admin_only"] and chat_id != 5:
-                general_func.sender(chat_id, f"Данное действие недоступно в текущей беседе")
+                Senders.sender(chat_id, f"Данное действие недоступно в текущей беседе")

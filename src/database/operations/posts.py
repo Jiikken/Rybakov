@@ -36,4 +36,18 @@ class Posts(DataBase):
     def change_posts(self, status: bool, chat_id: Optional[int] = None) -> bool:
         """Изменение счетчика постов"""
         return self._change_counter('posts_info', 'posts', status, chat_id)
+    
+    def get_posts_info(self) -> Tuple[int, int, int]:
+        """Получение информации о постах"""
+        def op(cursor):
+            cursor.execute('SELECT posts, approved_posts, posts_inspection FROM posts_info WHERE id = 1')
+            return cursor.fetchone()
+        return self._execute_db_operation(op) or (0, 0, 0)
+
+    def reset_posts_info(self, chat_id: Optional[int] = None) -> bool:
+        """Сброс информации о постах"""
+        def op(cursor):
+            cursor.execute('UPDATE posts_info SET posts = 0, approved_posts = 0 WHERE id = 1')
+            return cursor.rowcount > 0
+        return self._execute_db_operation(op, default_return=False, chat_id=chat_id)
 
