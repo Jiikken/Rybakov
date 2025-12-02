@@ -6,12 +6,8 @@ from src.utils.logs import logging
 
 
 class HandlerCommandsForPostsInLS(CommandsPosts):
-    def handler_commands_for_posts(self, msg, user_id, event):
-        forward_message = None
-
-        for cmd in self.commands_for_posts_in_ls:
-            if cmd.lower() in msg.lower():
-                forward_message = cmd
+    def handler_commands_for_posts(self, msg: str, user_id: int, event):
+        forward_message = self._find_command(msg)
 
         if forward_message:
             command = self.commands_for_posts_in_ls.get(forward_message)
@@ -21,5 +17,14 @@ class HandlerCommandsForPostsInLS(CommandsPosts):
             except Exception as e:
                 Senders.sender_in_ls(user_id, f"Произошла ошибка при обращении к методу")
                 logging.error(f"Ошибка при выполнении команды {forward_message}: {e}\n{traceback.format_exc()}")
+
+    def _find_command(self, msg: str) -> str:
+        forward_message = None
+
+        for cmd in self.commands_for_posts_in_ls:
+            if cmd.lower() in msg.lower():
+                forward_message = cmd
+
+        return forward_message
 
 handler_commands_for_posts_in_ls = HandlerCommandsForPostsInLS()

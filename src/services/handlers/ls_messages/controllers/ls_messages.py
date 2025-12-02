@@ -3,7 +3,7 @@ import traceback
 
 from src.services.handlers.ls_messages.commands import CommandsInLS
 from src.services.handlers.ls_messages.models.send_images import SendImagesModel
-from src.services.handlers.posts.ls.controllers.posts import handler_commands_for_posts_in_ls
+from src.services.handlers.posts.ls.controllers.handler_posts import handler_commands_for_posts_in_ls
 from src.services.models.senders import Senders
 from src.services.models.users import Users
 from src.utils.keyboards import Keyboards

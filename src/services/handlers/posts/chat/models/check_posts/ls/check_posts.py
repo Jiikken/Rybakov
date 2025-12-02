@@ -7,7 +7,7 @@ from src.services.models.posts import info_about_posts_in_chat
 
 class CommandsModelLS:
     @staticmethod
-    def approved_post_ls(chat_id, msg, bank_content = 4):
+    def approved_post_ls(chat_id: int, msg: str, bank_content: int = 4):
         message_id = info_about_posts_in_chat.get_post_id_from_message(chat_id, msg)
 
         if message_id > 0:
@@ -41,7 +41,7 @@ class CommandsModelLS:
             Senders.sender(chat_id, "Номер поста должен быть больше нуля")
 
     @staticmethod
-    def no_approved_post_ls(chat_id, msg, type):
+    def no_approved_post_ls(chat_id: int, msg: str, type: int):
         message_id = info_about_posts_in_chat.get_post_id_from_message(chat_id, msg)
 
         if message_id > 0:
@@ -77,7 +77,7 @@ class CommandsModelLS:
             Senders.sender(chat_id, "Номер поста должен быть больше нуля")
 
     @staticmethod
-    def personal_response_for_ls(chat_id, msg, user_id):
+    def personal_response_for_ls(chat_id: int, msg: str, user_id: int):
         message_id = info_about_posts_in_chat.get_post_id_from_message_for_personal_response(chat_id, msg)
         post_and_user.add_personal_response_to_post(message_id, user_id)
 
