@@ -6,10 +6,9 @@ from src.database.operations.posts import posts_data_base
 from src.services.models.senders import Senders
 from src.utils.keyboards import Keyboards
 
-
 class CommandsForPostsInChat:
     @staticmethod
-    def enter_post_chat(chat_id, user_id, event, content_chat = 5, admin_chat = 1):
+    def enter_post_chat(chat_id: int, user_id: int, event, content_chat: int = 5, admin_chat: int = 1):
         if posts_google_sheets.inactive_user(user_id, chat_id):
             Senders.sender(chat_id,
                    "На данный момент, я не могу рассмотреть от Вас материал, так как Вы находитесь в неактиве")

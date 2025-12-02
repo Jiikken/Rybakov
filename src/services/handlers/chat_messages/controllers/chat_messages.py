@@ -1,16 +1,15 @@
 import logging
 import traceback
-import json
 
 from src.database.operations.admins import admins
 from src.services.models.senders import Senders
-from src.services.handlers.posts.chat.controllers.posts import HandlerCommandsForPostsInChat
+from src.services.handlers.posts.chat.controllers.handler_posts_chat import HandlerCommandsForPostsInChat
 from src.services.handlers.chat_messages.commands import CommandsInChat
 
 
 handler_commands_for_posts_in_chat = HandlerCommandsForPostsInChat()
 class HandlerChatMessages(CommandsInChat):
-    def handler_chat_message(self, msg, user_id, chat_id, event):
+    def handler_chat_message(self, msg: str, user_id: int, chat_id: int, event):
         forward_command = self._find_command(msg, user_id, chat_id, event)
 
         if forward_command:
@@ -27,7 +26,7 @@ class HandlerChatMessages(CommandsInChat):
                     Senders.sender(chat_id, f"Произошла ошибка при обращении к методу")
                     logging.error(f"Ошибка при выполнении команды {forward_command}: {e}\n{traceback.format_exc()}")
 
-    def _find_command(self, msg: str, user_id: int, chat_id: int, event: str) -> str:
+    def _find_command(self, msg: str, user_id: int, chat_id: int, event) -> str:
         forward_command = None
 
         for cmd in self.strict_commands:
@@ -46,7 +45,7 @@ class HandlerChatMessages(CommandsInChat):
         return forward_command
 
     @staticmethod
-    def _fill_dictionary(command: dict, chat_id: int, msg: str, user_id: int, event: str) -> dict:
+    def _fill_dictionary(command: dict, chat_id: int, msg: str, user_id: int, event) -> dict:
         params = {}
 
         for param in command["params"]:
