@@ -7,7 +7,7 @@ from src.utils.keyboards import Keyboards
 
 class CommandsForPostsInLS:
     @staticmethod
-    def enter_post_ls(user_id, event, admin_chat = 1):
+    def enter_post_ls(user_id: int, event, admin_chat: int = 1):
         """Отправка поста на проверку в ЛС"""
         if posts_google_sheets.inactive_user(user_id):
             Senders.sender_in_ls(user_id,
