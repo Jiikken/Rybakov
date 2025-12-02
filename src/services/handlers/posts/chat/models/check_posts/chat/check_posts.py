@@ -9,7 +9,7 @@ from src.services.models.posts import Posts
 
 class CommandsModelChat:
     @staticmethod
-    def _approved_post_chat(chat_id, msg, content_chat = 5, bank_content = 4):
+    def approved_post_chat(chat_id, msg, content_chat = 5, bank_content = 4):
         message_id = Posts.get_post_id_from_message(chat_id, msg)
 
         if message_id > 0:
@@ -42,7 +42,7 @@ class CommandsModelChat:
             Senders.sender(chat_id, "Номер поста должен быть больше нуля")
 
     @staticmethod
-    def _no_approved_post_chat(chat_id, msg, type, content_chat = 5):
+    def no_approved_post_chat(chat_id, msg, type, content_chat = 5):
         message_id = Posts.get_post_id_from_message(chat_id, msg)
 
         if message_id > 0:
@@ -75,7 +75,7 @@ class CommandsModelChat:
         else:
             Senders.sender(chat_id, "Номер поста должен быть больше нуля")
 
-    def _personal_response_for_chat(self, chat_id, msg, user_id, content_chat = 5):
+    def personal_response_for_chat(self, chat_id, msg, user_id, content_chat = 5):
         message_id = Posts.get_post_id_from_message_for_personal_response(chat_id, msg)
         PostAndUser.add_personal_response_to_post(message_id, user_id)
 

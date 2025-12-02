@@ -1,4 +1,10 @@
-class CommandsPosts:
+from src.services.handlers.posts.chat.models.check_posts.chat.check_posts import CommandsModelChat
+from src.services.handlers.posts.chat.models.check_posts.ls.check_posts import CommandsModelLS
+from src.services.handlers.posts.chat.models.processing_posts import CommandsForPostsInChat
+from src.services.handlers.posts.ls.models.processing_posts import CommandsForPostsInLS
+
+
+class CommandsPosts(CommandsModelChat, CommandsModelLS, CommandsForPostsInChat, CommandsForPostsInLS):
     def __init__(self):
         self.commands_for_posts_in_chat = {
             "#одобрено": {
@@ -37,7 +43,7 @@ class CommandsPosts:
                 "params": ["chat_id", "msg", "type3"]
             },
             "#нeпрезентабельно": {
-                "handler": self._no_approved_post_ls,
+                "handler": self.no_approved_post_ls,
                 "admin_only": True,
                 "params": ["chat_id", "msg", "type3"]
             },
@@ -52,53 +58,53 @@ class CommandsPosts:
                 "params": ["chat_id", "msg", "user_id"]
             },
             "#мем": {
-                "handler": self.enter_post,
+                "handler": self.enter_post_chat,
                 "admin_only": False,
                 "params": ["chat_id", "user_id", "event"]
             },
             "#видео": {
-                "handler": self.enter_post,
+                "handler": self.enter_post_chat,
                 "admin_only": False,
                 "params": ["chat_id", "user_id", "event"]
             },
             "#клип": {
-                "handler": self.enter_post,
+                "handler": self.enter_post_chat,
                 "admin_only": False,
                 "params": ["chat_id", "user_id", "event"]
             },
             "#mem": {
-                "handler": self.enter_post,
+                "handler": self.enter_post_chat,
                 "admin_only": False,
                 "params": ["chat_id", "user_id", "event"]
             },
             "#video": {
-                "handler": self.enter_post,
+                "handler": self.enter_post_chat,
                 "admin_only": False,
                 "params": ["chat_id", "user_id", "event"]
             },
             "#clip": {
-                "handler": self.enter_post,
+                "handler": self.enter_post_chat,
                 "admin_only": False,
                 "params": ["chat_id", "user_id", "event"]
             }
         }
         self.commands_for_posts_in_ls = {
             "#мем": {
-                "handler": self.handle_enter_post_in_ls
+                "handler": self.enter_post_ls
             },
             "#видео": {
-                "handler": self.handle_enter_post_in_ls
+                "handler": self.enter_post_ls
             },
             "#клип": {
-                "handler": self.handle_enter_post_in_ls
+                "handler": self.enter_post_ls
             },
             "#mem": {
-                "handler": self.handle_enter_post_in_ls
+                "handler": self.enter_post_ls
             },
             "#video": {
-                "handler": self.handle_enter_post_in_ls
+                "handler": self.enter_post_ls
             },
             "#clip": {
-                "handler": self.handle_enter_post_in_ls
+                "handler": self.enter_post_ls
             }
         }

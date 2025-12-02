@@ -46,4 +46,5 @@ class PostAndUser(DataBase):
             result = cursor.fetchone()
             return result[0] if result else None
         return self._execute_db_operation(op, message_id, default_return=None, chat_id=chat_id)
-   
+
+post_and_user = PostAndUser()

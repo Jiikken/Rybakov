@@ -17,12 +17,11 @@ class MyLongPoll(VkBotLongPoll):
                 logging.critical(f"Ошибка в прослушивании событий: {e}\n{traceback.format_exc()}")
 
 class VkConnection:
-    def __init__(self):
-        """Подключение к vk_api"""
-        try:
-            self.vk_session = vk_api.VkApi(token=config.vk_token)
-            self.vk_api = self.vk_session.get_api()
-            self.longpoll = MyLongPoll(self.vk_session, config.group_id)
-            logging.info(f"Подключение к vk_api успешно")
-        except Exception as e:
-            logging.critical(f"Ошибка при авторизации vk_api: {e}\n{traceback.format_exc()}")
+    """Подключение к vk_api"""
+    try:
+        vk_session = vk_api.VkApi(token=config.vk_token)
+        vk_api = vk_session.get_api()
+        longpoll = MyLongPoll(vk_session, config.group_id)
+        logging.info(f"Подключение к vk_api успешно")
+    except Exception as e:
+        logging.critical(f"Ошибка при авторизации vk_api: {e}\n{traceback.format_exc()}")

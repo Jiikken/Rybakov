@@ -1,10 +1,9 @@
 import traceback
 
-from src.database.operations.post_and_user import PostAndUser as PostAndUser
 from src.services.models.senders import Senders
 from src.utils.logs import logging
 from src.services.handlers.posts.commands import CommandsPosts
-from src.services.handlers.posts.chat.check_posts.processing_posts import CommandsModel
+from src.services.handlers.posts.chat.models.processing_posts import CommandsForPostsInChat
 
 
 class HandlerCommandsForPostsInChat(CommandsPosts):
@@ -45,7 +44,7 @@ class HandlerCommandsForPostsInChat(CommandsPosts):
 
             elif not command["admin_only"] and chat_id == 5:
                 try:
-                    CommandsModel.enter_post(chat_id, user_id, event)
+                    CommandsForPostsInChat.enter_post_chat(chat_id, user_id, event)
                 except Exception as e:
                     Senders.sender(chat_id, f"Произошла ошибка при выполнении команды")
                     logging.error(f"Произошла ошибка при отправке поста на проверку: {e}\n{traceback.format_exc()}")

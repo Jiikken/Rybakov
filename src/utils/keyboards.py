@@ -1,6 +1,7 @@
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 
 class Keyboards:
+    @staticmethod
     def create_buttons(cid):
         keyboard = VkKeyboard(one_time=False, inline=True)
         keyboard.add_button(label=f"#Одобрено {cid}", color=VkKeyboardColor.POSITIVE)
@@ -12,6 +13,7 @@ class Keyboards:
         keyboard.add_button(label=f'#Персональный ответ {cid}', color=VkKeyboardColor.SECONDARY)
         return keyboard.get_keyboard()
     
+    @staticmethod
     def create_buttons_ls(cid):
         keyboard = VkKeyboard(one_time=False, inline=True)
         keyboard.add_button(label=f"#Oдобрено {cid}", color=VkKeyboardColor.POSITIVE)
@@ -23,6 +25,7 @@ class Keyboards:
         keyboard.add_button(label=f'#Пeрсональный ответ {cid}', color=VkKeyboardColor.SECONDARY)
         return keyboard.get_keyboard()
     
+    @staticmethod
     def cheburek():
         keyboard = VkKeyboard(one_time=False, inline=True)
         keyboard.add_button(label=f"Хочу", color=VkKeyboardColor.POSITIVE)

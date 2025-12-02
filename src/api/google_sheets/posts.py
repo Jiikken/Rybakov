@@ -96,4 +96,5 @@ class Posts(GoogleSheets):
         except Exception as e:
             Senders.sender(chat_id, f"Произошла ошибка при обращении к методу")
             logging.error(f"Ошибка при получении информации о неактиве у пользователя: {e}\n{traceback.format_exc()}")
-    
+
+posts_google_sheets = Posts()

@@ -5,9 +5,9 @@ from src.services.models.senders import Senders
 from src.utils.keyboards import Keyboards
 
 
-class PostsModel:
+class CommandsForPostsInLS:
     @staticmethod
-    def handle_enter_post_in_ls(user_id, event, admin_chat = 1):
+    def enter_post_ls(user_id, event, admin_chat = 1):
         """Отправка поста на проверку в ЛС"""
         if PostsGoogleSheets.inactive_user(user_id):
             Senders.sender_in_ls(user_id,

@@ -51,3 +51,4 @@ class Posts(DataBase):
             return cursor.rowcount > 0
         return self._execute_db_operation(op, default_return=False, chat_id=chat_id)
 
+posts_data_base = Posts()

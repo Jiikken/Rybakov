@@ -1,10 +1,10 @@
-from src.services.handlers.posts.ls.models.posts import PostsModel
+from src.services.handlers.posts.ls.models.processing_posts import CommandsForPostsInLS
 
 
-class CommandsInLS(PostsModel):
+class CommandsInLS(CommandsForPostsInLS):
     def __init__(self):
         self.commands_for_posts_admin = {
             "#шишки": {
-                "handler": self.handle_enter_post_in_ls
+                "handler": self.enter_post_ls
             }
         }

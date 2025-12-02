@@ -7,7 +7,7 @@ from src.services.models.posts import Posts
 
 class CommandsModelLS:
     @staticmethod
-    def _approved_post_ls(chat_id, msg, bank_content = 4):
+    def approved_post_ls(chat_id, msg, bank_content = 4):
         message_id = Posts.get_post_id_from_message(chat_id, msg)
 
         if message_id > 0:
@@ -41,7 +41,7 @@ class CommandsModelLS:
             Senders.sender(chat_id, "Номер поста должен быть больше нуля")
 
     @staticmethod
-    def _no_approved_post_ls(chat_id, msg, type):
+    def no_approved_post_ls(chat_id, msg, type):
         message_id = Posts.get_post_id_from_message(chat_id, msg)
 
         if message_id > 0:
@@ -76,7 +76,7 @@ class CommandsModelLS:
         else:
             Senders.sender(chat_id, "Номер поста должен быть больше нуля")
 
-    def _personal_response_for_ls(self, chat_id, msg, user_id):
+    def personal_response_for_ls(self, chat_id, msg, user_id):
         message_id = Posts.get_post_id_from_message_for_personal_response(chat_id, msg)
         PostAndUser.add_personal_response_to_post(message_id, user_id)
 
@@ -86,7 +86,7 @@ class CommandsModelLS:
 
             elif message_id:
                 Senders.sender(chat_id, 'Пожалуйста, введите текст для персонального ответа, с маленькой буквы')
-                response = self._wait_for_user_input(chat_id, message_id)
+                response = self.wait_for_user_input(chat_id, message_id)
                 PostAndUser.remove_personal_response_to_post(message_id)
 
                 PostAndUser.remove_post_to_user(message_id, chat_id)
