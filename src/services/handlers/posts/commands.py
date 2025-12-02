@@ -6,7 +6,7 @@ from src.services.handlers.posts.ls.models.processing_posts import CommandsForPo
 
 class CommandsPosts(CommandsModelChat, CommandsModelLS, CommandsForPostsInChat, CommandsForPostsInLS):
     def __init__(self):
-        self.commands_for_posts_in_chat = {
+        self.commands_for_checking_posts = {
             "#одобрено": {
                 "handler": self.approved_post_chat,
                 "admin_only": True,
@@ -56,7 +56,9 @@ class CommandsPosts(CommandsModelChat, CommandsModelLS, CommandsForPostsInChat, 
                 "handler": self.personal_response_for_ls,
                 "admin_only": True,
                 "params": ["chat_id", "msg", "user_id"]
-            },
+            }
+        }
+        self.commands_for_posts_in_chat = {
             "#мем": {
                 "handler": self.enter_post_chat,
                 "admin_only": False,
