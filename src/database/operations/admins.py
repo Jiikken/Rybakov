@@ -24,3 +24,5 @@ class Admins(DataBase):
             cursor.execute('DELETE FROM admins WHERE user_id = ?', (uid,))
             return cursor.rowcount > 0
         return self._execute_db_operation(op, user_id, default_return=False, chat_id=chat_id)
+
+admins = Admins()

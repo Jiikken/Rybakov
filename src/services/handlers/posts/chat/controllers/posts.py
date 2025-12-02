@@ -1,9 +1,9 @@
 import traceback
 
+from src.services.handlers.posts.chat.models.processing_posts import CommandsForPostsInChat
+from src.services.handlers.posts.commands import CommandsPosts
 from src.services.models.senders import Senders
 from src.utils.logs import logging
-from src.services.handlers.posts.commands import CommandsPosts
-from src.services.handlers.posts.chat.models.processing_posts import CommandsForPostsInChat
 
 
 class HandlerCommandsForPostsInChat(CommandsPosts):

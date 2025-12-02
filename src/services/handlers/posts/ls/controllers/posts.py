@@ -1,9 +1,8 @@
 import traceback
 
-from src.database.operations.post_and_user import PostAndUser as PostAndUser
+from src.services.handlers.posts.commands import CommandsPosts
 from src.services.models.senders import Senders
 from src.utils.logs import logging
-from src.services.handlers.posts.commands import CommandsPosts
 
 
 class HandlerCommandsForPostsInLS(CommandsPosts):
@@ -22,4 +21,5 @@ class HandlerCommandsForPostsInLS(CommandsPosts):
             except Exception as e:
                 Senders.sender_in_ls(user_id, f"Произошла ошибка при обращении к методу")
                 logging.error(f"Ошибка при выполнении команды {forward_message}: {e}\n{traceback.format_exc()}")
-        
+
+handler_commands_for_posts_in_ls = HandlerCommandsForPostsInLS()

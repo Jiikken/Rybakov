@@ -1,7 +1,6 @@
+import json
 import logging
 import traceback
-import json
-
 from typing import Optional
 
 from vk_api import ApiError

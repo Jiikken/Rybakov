@@ -8,7 +8,7 @@ from src.api.google_sheets.init import GoogleSheets
 
 
 class Statistics(GoogleSheets):
-    def redactors_statistics(self, msg: Optional[str], chat_id: int) -> None:
+    def redactors_statistics(self, msg: Optional[str], chat_id: int):
         """Получение статистики редакторов"""
         try:
             self._rate_limit()
@@ -98,7 +98,7 @@ class Statistics(GoogleSheets):
             Senders.sender(chat_id, f"Произошла ошибка при обращении к методу")
             logging.error(f"Ошибка при получении статистики редакторов: {e}\n{traceback.format_exc()}")
 
-    def redactors_statistics_for_admins(self, chat_id: int) -> None:
+    def redactors_statistics_for_admins(self, chat_id: int):
         """Получение статистики редакторов для администрации"""
         try:
             self._rate_limit()
@@ -139,7 +139,7 @@ class Statistics(GoogleSheets):
             Senders.sender(chat_id, f"Произошла ошибка при обращении к методу")
             logging.error(f"Ошибка при получении статистики редакторов для администрации: {e}\n{traceback.format_exc()}")
 
-    def reset_redactors_statistics(self, chat_id: int) -> None:
+    def reset_redactors_statistics(self, chat_id: int):
         """Обнуление статистики (/r)"""
         try:
             self._rate_limit()
@@ -159,4 +159,4 @@ class Statistics(GoogleSheets):
             Senders.sender(chat_id, f"Произошла ошибка при обращении к методу")
             logging.error(f"Ошибка при сбросе статистики: {e}\n{traceback.format_exc()}")
 
-    
+statistics_from_gs = Statistics()

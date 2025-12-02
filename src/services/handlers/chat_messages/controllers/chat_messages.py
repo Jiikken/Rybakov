@@ -1,7 +1,7 @@
 import logging
 import traceback
 
-from src.database.operations.admins import Admins
+from src.database.operations.admins import admins
 from src.services.models.senders import Senders
 from src.services.handlers.posts.chat.controllers.posts import HandlerCommandsForPostsInChat
 from src.services.handlers.chat_messages.commands import CommandsInChat
@@ -17,9 +17,9 @@ class HandlerChatMessages(CommandsInChat):
                 forward_command = msg
 
             else:
-                for cmd in self.not_strict_commands:
-                    if cmd.lower() in msg.lower():
-                        forward_command = cmd
+                for _cmd in self.not_strict_commands:
+                    if _cmd.lower() in msg.lower():
+                        forward_command = _cmd
                     
                     else:
                         handler_commands_for_posts_in_chat.handler_commands_for_posts(msg, user_id, chat_id, event)
@@ -28,7 +28,7 @@ class HandlerChatMessages(CommandsInChat):
         if forward_command:
             command = self.strict_commands.get(forward_command) or self.not_strict_commands.get(forward_command)
 
-            if command["admin_only"] and str(user_id) not in str(Admins.get_admins_list()):
+            if command["admin_only"] and str(user_id) not in str(admins.get_admins_list()):
                 Senders.sender(chat_id, f"У Вас нет доступа к этой команде")
 
             else:
@@ -55,3 +55,5 @@ class HandlerChatMessages(CommandsInChat):
                 except Exception as e:
                     Senders.sender(chat_id, f"Произошла ошибка при обращении к методу")
                     logging.error(f"Ошибка при выполнении команды {forward_command}: {e}\n{traceback.format_exc()}")
+
+handler_chat_messages = HandlerChatMessages()

@@ -39,3 +39,5 @@ class Users(Senders):
             return f"{user_id}"
 
         return f"[id{user_id}|{first_name} {last_name}]"
+
+users = Users()

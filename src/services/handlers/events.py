@@ -1,11 +1,9 @@
 import traceback
 
 from src.utils.logs import logging
-from services.handlers.chat_messages.controllers.chat_messages import HandlerChatMessages
-from services.handlers.ls_messages.controllers.ls_messages import HandlerLSMessages
+from src.services.handlers.chat_messages.controllers.chat_messages import handler_chat_messages
+from src.services.handlers.ls_messages.controllers.ls_messages import handler_ls_messages
 
-handler_chat_messages = HandlerChatMessages()
-handler_ls_messages = HandlerLSMessages()
 class HandlerEvents:
     @staticmethod
     def handler_event(event):

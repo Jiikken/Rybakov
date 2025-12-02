@@ -1,10 +1,10 @@
 import traceback
 
-from api.vk.vk import VkConnection
-from src.database.operations.post_and_user import PostAndUser as PostAndUser
+from vk_api.upload import VkUpload
+
+from src.api.vk.vk import VkConnection
 from src.services.models.senders import Senders
 from src.utils.logs import logging
-from vk_api.upload import VkUpload
 
 
 class SendImagesModel:

@@ -1,9 +1,13 @@
 import logging
+import time
 import traceback
-
 from datetime import datetime
-from babel.dates import format_date
 
+from babel.dates import format_date
+from vk_api.bot_longpoll import VkBotEventType
+
+from src.api.vk.vk import VkConnection
+from src.database.operations.post_and_user import post_and_user
 from src.services.models.senders import Senders
 
 
@@ -73,3 +77,21 @@ class Posts(Senders):
             message_id = 0
 
         return message_id
+
+    @staticmethod
+    def wait_for_user_input(chat_id, message_id, timeout=60):
+        """Для персонального ответа"""
+        start_time = time.time()
+        while (time.time() - start_time) < timeout:
+            for event in VkConnection.longpoll.listen():
+                if event.type == VkBotEventType.MESSAGE_NEW:
+                    if event.from_chat and event.chat_id == chat_id:
+                        user_id = event.message.get("from_id")
+                        if user_id == post_and_user.get_admin_id_by_response_post(message_id):
+                            user_response = event.object.message['text']
+                            return user_response
+
+        Senders.sender(chat_id, 'Время ожидания истекло')
+        return None
+
+info_about_posts_in_chat = Posts()

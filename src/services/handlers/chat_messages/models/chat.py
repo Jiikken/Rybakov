@@ -3,9 +3,10 @@ import traceback
 
 from vk_api import ApiError
 
-from api.vk.vk import VkConnection
+from src.api.vk.vk import VkConnection
+from src.services.models.users import users
 from src.services.models.senders import Senders
-from src.database.operations.admins import Admins
+from src.database.operations.admins import admins
 
 
 class ChatModel:
@@ -17,9 +18,9 @@ class ChatModel:
     @staticmethod
     def kick_user(chat_id, msg, event):
         """Кик пользователя"""
-        user_id = Senders.give_user_id(chat_id, msg, event)
+        user_id = users.give_user_id(chat_id, msg, event)
 
-        if user_id in Admins.get_admins_list():
+        if user_id in admins.get_admins_list():
             Senders.sender(chat_id, "Этот пользователь является администратором")
 
         elif user_id is not None:

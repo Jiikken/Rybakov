@@ -5,13 +5,14 @@ from typing import Optional
 import time
 import gspread
 from google.oauth2.service_account import Credentials
+from gspread import Worksheet
 from vk_api import ApiError
 
 from src.config import config
 
 
 class GoogleSheets:
-    def __init__(self) -> None:
+    def __init__(self):
         """Подключение к Google Sheets"""
         try:
             self.scope = [
@@ -34,14 +35,12 @@ class GoogleSheets:
             time.sleep(self.min_interval - time_since_last)
         self.last_request_time = time.time()
 
-    def _get_sheet_with_retry(self, sheet_name=None, max_retries=3) -> None:
+    def _get_sheet_with_retry(self, sheet_name=None, max_retries=3) -> Worksheet:
         """Получение листа с повторными попытками"""
         for attempt in range(max_retries):
             try:
                 self._rate_limit()
-                return self.client.open(config.spreadsheetname).worksheet(
-                    sheet_name if sheet_name else config.default_sheet_name
-                )
+                return self.client.open(config.spreadsheetname).worksheet(sheet_name if sheet_name else config.default_sheet_name)
             except ApiError as e:
                 if '429' in str(e) and attempt < max_retries - 1:
                     wait_time = (2 ** attempt) + 1  # Экспоненциальная backoff
@@ -51,7 +50,7 @@ class GoogleSheets:
                 else:
                     raise
 
-    def _get_sheet(self, sheet_name: Optional[str] = None):
+    def _get_sheet(self, sheet_name: Optional[str] = None) -> Worksheet:
         """Получение таблицы по названию"""
         return self.client.open(config.spreadsheetname).worksheet(sheet_name if sheet_name else config.default_sheet_name)
 

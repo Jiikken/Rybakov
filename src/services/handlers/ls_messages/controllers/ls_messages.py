@@ -6,7 +6,7 @@ from src.services.models.users import Users
 from src.services.handlers.ls_messages.models.send_images import SendImagesModel
 from src.utils.keyboards import Keyboards
 from src.services.handlers.ls_messages.commands import CommandsInLS
-from src.services.handlers.posts.ls.controllers.posts import HandlerCommandsForPostsInLS
+from src.services.handlers.posts.ls.controllers.posts import handler_commands_for_posts_in_ls
 
 
 class HandlerLSMessages(CommandsInLS):
@@ -17,8 +17,8 @@ class HandlerLSMessages(CommandsInLS):
             if cmd.lower() in msg.lower():
                 forward_message = cmd
 
-        if forward_message == None:
-            HandlerCommandsForPostsInLS.handler_commands_for_posts()
+        if forward_message is None:
+            handler_commands_for_posts_in_ls.handler_commands_for_posts()
 
         if forward_message:
             command = self.commands_for_posts_admin.get(forward_message)
@@ -34,3 +34,5 @@ class HandlerLSMessages(CommandsInLS):
             SendImagesModel.send_dikiy_ogyrec(user_id)
         else:
             Senders.sender_in_ls(user_id, f"Здравствуйте, {Users.info_user(user_id)}\n\nХотите чебурек?", keyboard=Keyboards.cheburek())
+
+handler_ls_messages = HandlerLSMessages()
