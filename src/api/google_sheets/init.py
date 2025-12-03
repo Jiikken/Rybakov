@@ -54,4 +54,27 @@ class GoogleSheets:
         """Получение таблицы по названию"""
         return self.client.open(config.spreadsheetname).worksheet(sheet_name if sheet_name else config.default_sheet_name)
 
-    
+    def _get_sheets(self) -> dict:
+        """
+        keys in dictionary:
+
+            - "stats"
+            - "bot_sheet"
+            - "redactors_sheet"
+            - "stability"
+
+        :return: dictionary sheets
+        """
+        stats_sheet = self._get_sheet("Статистика")
+        bot_sheet = self._get_sheet("Информация для бота")
+        redactors_work_sheet = self._get_sheet("Работа")
+        stability = self._get_sheet("Стабильность")
+
+        sheets = {
+            "stats": stats_sheet,
+            "bot_sheet": bot_sheet,
+            "redactors_sheet": redactors_work_sheet,
+            "stability": stability
+        }
+
+        return sheets

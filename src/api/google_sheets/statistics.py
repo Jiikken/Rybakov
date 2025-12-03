@@ -12,11 +12,9 @@ class Statistics(GoogleSheets):
         """Получение статистики редакторов"""
         try:
             self._rate_limit()
-            main_stats_sheet = self._get_sheet("Статистика")
-            stats_for_select_days = self._get_sheet("Стабильность")
-            bot_sheet = self._get_sheet("Информация для бота")
+            sheets = self._get_sheets()
 
-            days_since_restart = int(bot_sheet.acell("B32").value)
+            days_since_restart = int(sheets["bot_sheet"].acell("B32").value)
 
             if len(msg.split(" ")) > 1:
                 try:
@@ -34,12 +32,12 @@ class Statistics(GoogleSheets):
                 select_days = days_since_restart
 
             # Получаем данные по найденным индексам
-            redactors_ids = main_stats_sheet.col_values(10)[1:] # IDs редакторов
-            redactors_names = main_stats_sheet.col_values(2)[1:] # Имена ВК
-            probation = main_stats_sheet.col_values(11)[1:] # Должность
-            redactors_statistics = main_stats_sheet.col_values(8)[1:] # Статистика
+            redactors_ids = sheets["stats"].col_values(10)[1:] # IDs редакторов
+            redactors_names = sheets["stats"].col_values(2)[1:] # Имена ВК
+            probation = sheets["stats"].col_values(11)[1:] # Должность
+            redactors_statistics = sheets["stats"].col_values(8)[1:] # Статистика
 
-            posts_sent_for_review = bot_sheet.col_values(2)[1:] # Опубликованных по
+            posts_sent_for_review = sheets["bot_sheet"].col_values(2)[1:] # Опубликованных по
 
             # Инициализация статистики
             post_stats = [0] * len(redactors_ids)
@@ -51,7 +49,7 @@ class Statistics(GoogleSheets):
 
                 # Собираем данные из всех столбцов периода
                 for col in range(start_col, end_col + 1):
-                    day_posts = stats_for_select_days.col_values(col)[1:]
+                    day_posts = sheets["stability"].col_values(col)[1:]
                     for i in range(len(redactors_ids)):
                         try:
                             post_stats[i] += int(day_posts[i]) if i < len(day_posts) and str(day_posts[i]).isdigit() else 0
@@ -102,17 +100,16 @@ class Statistics(GoogleSheets):
         """Получение статистики редакторов для администрации"""
         try:
             self._rate_limit()
-            main_stats_sheet = self._get_sheet("Статистика")
-            bot_sheet = self._get_sheet("Информация для бота")
+            sheets = self._get_sheets()
 
-            days_since_restart = int(bot_sheet.acell("B32").value)
+            days_since_restart = int(sheets["bot_sheet"].acell("B32").value)
 
-            redactors_ids = bot_sheet.col_values(1)[1:]  # IDs редакторов
-            redactors_names = main_stats_sheet.col_values(2)[1:]  # Имена ВК
-            probation = main_stats_sheet.col_values(11)[1:]  # Должность
-            posts_sent_for_review = bot_sheet.col_values(2)[1:]  # Опубликованных по
-            all_posts = main_stats_sheet.col_values(6)[1:]  # Все посты из столбца F
-            percent_approved_posts = main_stats_sheet.col_values(9)[1:]  # Процент одобрения из столбца K
+            redactors_ids = sheets["bot_sheet"].col_values(1)[1:]  # IDs редакторов
+            redactors_names = sheets["stats"].col_values(2)[1:]  # Имена ВК
+            probation = sheets["stats"].col_values(11)[1:]  # Должность
+            posts_sent_for_review = sheets["bot_sheet"].col_values(2)[1:]  # Опубликованных по
+            all_posts = sheets["stats"].col_values(6)[1:]  # Все посты из столбца F
+            percent_approved_posts = sheets["stats"].col_values(9)[1:]  # Процент одобрения из столбца K
 
             statistics = (
                 f"Статистика редакторов за выбранное количество дней: {days_since_restart}\n\n"
@@ -143,20 +140,19 @@ class Statistics(GoogleSheets):
         """Обнуление статистики (/r)"""
         try:
             self._rate_limit()
-            bot_sheet = self._get_sheet("Информация для бота")
-            redactors_work_sheet = self._get_sheet("Работа")
-            stability = self._get_sheet("Стабильность")
+            sheets = self._get_sheets()
 
-            bot_sheet.update_acell("B33", datetime.now().strftime("%d.%m.%Y"))
+            sheets["bot_sheet"].update_acell("B33", datetime.now().strftime("%d.%m.%Y"))
 
-            bot_sheet.batch_clear(["B2:C25"])
-            redactors_work_sheet.batch_clear(["A2:E"])
-            redactors_work_sheet.batch_clear(["G2:G"])
-            stability.batch_clear(["C2:AF"])
+            sheets["bot_sheet"].batch_clear(["B2:C25"])
+            sheets["redactors_sheet"].batch_clear(["A2:E"])
+            sheets["redactors_sheet"].batch_clear(["G2:G"])
+            sheets["stability"].batch_clear(["C2:AF"])
 
             Senders.sender(chat_id, "Статистика обнулена")
         except Exception as e:
             Senders.sender(chat_id, f"Произошла ошибка при обращении к методу")
             logging.error(f"Ошибка при сбросе статистики: {e}\n{traceback.format_exc()}")
+
 
 statistics_from_gs = Statistics()
