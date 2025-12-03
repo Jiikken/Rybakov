@@ -9,11 +9,11 @@ class Posts(GoogleSheets):
     def summ_posts(self, user_id: int, chat_id: int = 2):
         """Метод для статистики количества постов отправленных от пользователя"""
         try:
-            self._rate_limit()
-            sheets = self._get_sheets()
+            self.rate_limit()
+            sheets = self.get_sheets()
 
-            day_reset_stats = sheets["bot_sheet"].acell("B32")
             redactors_ids = sheets["stability"].col_values(2)[1:]
+            day_reset_stats = sheets["bot_sheet"].acell("B32")
             days_reset_stats = sheets["stability"].row_values(1)
 
             for index, redactor_id in enumerate(redactors_ids):
@@ -34,8 +34,8 @@ class Posts(GoogleSheets):
 
     def summ_approved_posts(self, user_id: int, chat_id: int):
         try:
-            self._rate_limit()
-            sheets = self._get_sheets()
+            self.rate_limit()
+            sheets = self.get_sheets()
 
             redactors_ids = sheets["bot_sheet"].col_values(1)[1:]
             column_percent_approved_posts = int(sheets["bot_sheet"].row_values(1).index("Одобренные посты") + 1)
@@ -57,8 +57,8 @@ class Posts(GoogleSheets):
 
     def info_posts_per_month(self, chat_id: int):
         try:
-            self._rate_limit()
-            sheets = self._get_sheets()
+            self.rate_limit()
+            sheets = self.get_sheets()
 
             percent_public_posts = sheets["bot_sheet"].acell("B31").value
             days_since_reset_stats = sheets["bot_sheet"].acell("B32").value
@@ -76,8 +76,8 @@ class Posts(GoogleSheets):
     def inactive_user(self, user_id: int, chat_id: int = 2) -> bool:
         """Проверка на неактив у пользователя"""
         try:
-            self._rate_limit()
-            sheets = self._get_sheets()
+            self.rate_limit()
+            sheets = self.get_sheets()
 
             column_m = sheets["stats"].col_values(10)[1:]  # 13 — это индекс столбца с IDs редакторов
 

@@ -1,94 +1,39 @@
 import logging
+import threading
 import traceback
 from datetime import datetime
 from typing import Optional
 
-from src.services.models.senders import Senders
 from src.api.google_sheets.init import GoogleSheets
+from src.services.models.senders import Senders
 
 
 class Statistics(GoogleSheets):
     def redactors_statistics(self, msg: Optional[str], chat_id: int):
         """Получение статистики редакторов"""
         try:
-            self._rate_limit()
-            sheets = self._get_sheets()
-
-            days_since_restart = int(sheets["bot_sheet"].acell("B32").value)
+            self.rate_limit()
+            sheets = self.get_sheets()
+            columns = self.get_columns()
 
             if len(msg.split(" ")) > 1:
-                try:
-                    select_days = int(msg.split(" ")[1])
-                    if select_days > days_since_restart:
-                        Senders.sender(chat_id, f"Информации за этот период ещё нет (максимум дней: {days_since_restart})")
-                        return
-                    if select_days < 0:
-                        Senders.sender(chat_id, f"Не могу показать информацию за минусовой период")
-                        return
-                except ValueError:
-                    Senders.sender(chat_id, "Не могу отправить статистику за данный период")
-                    return
+                select_days = self._validation_days_since_restart(msg, columns["days_since_restart"], chat_id)
             else:
-                select_days = days_since_restart
-
-            # Получаем данные по найденным индексам
-            redactors_ids = sheets["stats"].col_values(10)[1:] # IDs редакторов
-            redactors_names = sheets["stats"].col_values(2)[1:] # Имена ВК
-            probation = sheets["stats"].col_values(11)[1:] # Должность
-            redactors_statistics = sheets["stats"].col_values(8)[1:] # Статистика
-
-            posts_sent_for_review = sheets["bot_sheet"].col_values(2)[1:] # Опубликованных по
+                select_days = columns["days_since_restart"]
 
             # Инициализация статистики
-            post_stats = [0] * len(redactors_ids)
+            posts_stats = [0] * len(columns["ids"])
 
             # Если выбран период - собираем статистику по постам
             if len(msg.split(" ")) > 1:
-                start_col = 2 + (days_since_restart - select_days + 1)
-                end_col = 2 + days_since_restart
-
-                # Собираем данные из всех столбцов периода
-                for col in range(start_col, end_col + 1):
-                    day_posts = sheets["stability"].col_values(col)[1:]
-                    for i in range(len(redactors_ids)):
-                        try:
-                            post_stats[i] += int(day_posts[i]) if i < len(day_posts) and str(day_posts[i]).isdigit() else 0
-                        except (IndexError, ValueError):
-                            continue
+                posts_stats = self._get_stats_about_posts(columns, select_days, sheets, posts_stats)
             else:
-                # Текущая статистика (из столбца I)
-                current_posts = redactors_statistics  # Столбец I
+                current_posts = columns["statistics"]
 
-                for i in range(len(redactors_ids)):
-                    post_stats[i] = int(current_posts[i]) if i < len(current_posts) and str(current_posts[i]).isdigit() else 0
+                for i in range(len(columns["ids"])):
+                    posts_stats[i] = int(current_posts[i]) if i < len(current_posts) and str(current_posts[i]).isdigit() else 0
 
-            word_info = "Редактор — [ СТАТИСТИКА ]" if days_since_restart >= 10 and len(msg.split(" ")) == 1 else "Редактор — [ Всего постов отправлено ]"
-
-            statistics = f"Статистика редакторов за выбранное количество дней: {select_days}\n\n"
-            statistics += f"{word_info}\n\n"
-
-            for index, redactor_id in enumerate(redactors_ids):
-                redactor_id = redactor_id.strip()
-                if redactor_id.isdigit():  # Проверяем, что chat_id пользователя корректный
-                    rc = redactors_statistics[index] if index < len(redactors_statistics) else 0
-                    pp = posts_sent_for_review[index] if index < len(posts_sent_for_review) else 0
-                    additional_text = probation[index].strip() if index < len(probation) else ""
-
-                    # Используем post_stats если выбран период, иначе pp
-                    posts_count = post_stats[index] if len(msg.split(" ")) > 1 else pp
-
-                    # Проверяем, что индекс не выходит за пределы списка subscribers_names
-                    if index < len(redactors_names):
-                        if select_days >= 10 and len(msg.split(" ")) < 2:
-                            if additional_text:  # Проверяем, есть ли текст в 10-м столбце
-                                statistics += f"{additional_text} [id{redactor_id}|{redactors_names[index]}] — [ {rc} ]\n"
-                            else:
-                                statistics += f"[id{redactor_id}|{redactors_names[index]}] — [ {rc} ]\n"
-                        else:
-                            if additional_text:  # Проверяем, есть ли текст в 10-м столбце
-                                statistics += f"{additional_text} [id{redactor_id}|{redactors_names[index]}] — [ {posts_count} ]\n"
-                            else:
-                                statistics += f"[id{redactor_id}|{redactors_names[index]}] — [ {posts_count} ]\n"
+            statistics = f"{self._formation_statistics_message(columns, msg, select_days, posts_stats)}"
 
             Senders.sender(chat_id, statistics)
 
@@ -96,63 +41,167 @@ class Statistics(GoogleSheets):
             Senders.sender(chat_id, f"Произошла ошибка при обращении к методу")
             logging.error(f"Ошибка при получении статистики редакторов: {e}\n{traceback.format_exc()}")
 
+    @staticmethod
+    def _validation_days_since_restart(msg: str, days_since_restart: int, chat_id: int) -> int:
+        """
+        Проверка введённых дней для сбора статистики
+
+        :param msg
+        :param days_since_restart
+        :param chat_id
+
+        :return: select days
+        """
+        try:
+            select_days = int(msg.split(" ")[1])
+            if select_days > days_since_restart:
+                Senders.sender(chat_id, f"Информации за этот период ещё нет (максимум дней: {days_since_restart})")
+                raise ValueError("Введено число превышающее истинное значение")
+            if select_days < 0:
+                Senders.sender(chat_id, f"Не могу показать информацию за минусовой период")
+                raise ValueError("Введено число отрицательное число")
+            return select_days
+        except ValueError:
+            Senders.sender(chat_id, "Не могу отправить статистику за данный период")
+            raise ValueError("Что-то введено неверно")
+
+    @staticmethod
+    def _get_stats_about_posts(columns: dict, select_days: int, sheets: dict, posts_stats: list) -> list:
+        """
+        Получение информации о постах за выбранных период из таблицы
+
+        :param columns:
+        :param select_days:
+        :param sheets:
+        :param posts_stats:
+
+        :return: post_stats
+        """
+        start_col = 2 + (columns["days_since_restart"] - select_days + 1)
+        end_col = 2 + columns["days_since_restart"]
+
+        for col in range(start_col, end_col + 1):
+            day_posts = sheets["stability"].col_values(col)[1:]
+            for i in range(len(columns["ids"])):
+                try:
+                    posts_stats[i] += int(day_posts[i]) if i < len(day_posts) and str(day_posts[i]).isdigit() else 0
+                except (IndexError, ValueError):
+                    continue
+
+        return posts_stats
+
+    @staticmethod
+    def _formation_statistics_message(columns: dict, msg: str, select_days: int, posts_stats: list) -> str:
+        """
+        Формирование сообщения статистики редакторов
+
+        :param msg:
+        :param select_days:
+        :param posts_stats:
+
+        :return: statistics
+        """
+        word_info = "Редактор — [ СТАТИСТИКА ]" if columns["days_since_restart"] >= 10 and len(msg.split(" ")) == 1 else "Редактор — [ Всего постов отправлено ]"
+
+        statistics = f"Статистика редакторов за выбранное количество дней: {select_days}\n\n"
+        statistics += f"{word_info}\n\n"
+
+        # Перебор всех редакторов
+        for index, redactor_id in enumerate(columns["ids"]):
+            redactor_id = redactor_id.strip()
+            if redactor_id.isdigit():
+
+                # Сбор информации о редакторе
+                redactors_statistics = columns['statistics'][index] if index < len(columns['statistics']) else 0
+                posts_sent_for_review = columns['posts_sent_for_review'][index] if index < len(columns['posts_sent_for_review']) else 0
+                redactor_probation = columns['probation'][index].strip() if index < len(columns['probation']) else ""
+
+                posts_count = posts_stats[index] if len(msg.split(" ")) > 1 else posts_sent_for_review
+
+                # Формирование сообщения о редакторе
+                if index < len(columns["names"]):
+                    if select_days >= 10 and len(msg.split(" ")) < 2:
+                        if redactor_probation:
+                            statistics += f"{redactor_probation} [id{redactor_id}|{columns['names'][index]}] — [ {redactors_statistics} ]\n"
+                        else:
+                            statistics += f"[id{redactor_id}|{columns['names'][index]}] — [ {redactors_statistics} ]\n"
+                    else:
+                        if redactor_probation:
+                            statistics += f"{redactor_probation} [id{redactor_id}|{columns['names'][index]}] — [ {posts_count} ]\n"
+                        else:
+                            statistics += f"[id{redactor_id}|{columns['names'][index]}] — [ {posts_count} ]\n"
+
+            return statistics
+
     def redactors_statistics_for_admins(self, chat_id: int):
         """Получение статистики редакторов для администрации"""
         try:
-            self._rate_limit()
-            sheets = self._get_sheets()
+            self.rate_limit()
+            columns = self.get_columns()
 
-            days_since_restart = int(sheets["bot_sheet"].acell("B32").value)
-
-            redactors_ids = sheets["bot_sheet"].col_values(1)[1:]  # IDs редакторов
-            redactors_names = sheets["stats"].col_values(2)[1:]  # Имена ВК
-            probation = sheets["stats"].col_values(11)[1:]  # Должность
-            posts_sent_for_review = sheets["bot_sheet"].col_values(2)[1:]  # Опубликованных по
-            all_posts = sheets["stats"].col_values(6)[1:]  # Все посты из столбца F
-            percent_approved_posts = sheets["stats"].col_values(9)[1:]  # Процент одобрения из столбца K
-
-            statistics = (
-                f"Статистика редакторов за выбранное количество дней: {days_since_restart}\n\n"
-                f"Редактор — [ Опубликовано | Всего | % Одобрения ] \n\n"
-            )
-
-            for index, subscriber_id in enumerate(redactors_ids):
-                subscriber_id = subscriber_id.strip()
-                if subscriber_id.isdigit():  # Проверяем, что chat_id пользователя корректный
-                    ap = all_posts[index] if index < len(all_posts) else 0
-                    pap = percent_approved_posts[index] if index < len(percent_approved_posts) else 0
-                    pp = posts_sent_for_review[index] if index < len(posts_sent_for_review) else 0
-                    additional_text = probation[index].strip() if index < len(probation) else ""
-
-                    # Проверяем, что индекс не выходит за пределы списка subscribers_names
-                    if index < len(redactors_names):
-                        if additional_text:  # Проверяем, есть ли текст в 10-м столбце
-                            statistics += f"{additional_text} [id{subscriber_id}|{redactors_names[index]}] — [ {ap} | {pp} | {pap} ]\n"
-                        else:
-                            statistics += f"[id{subscriber_id}|{redactors_names[index]}] — [ {ap} | {pp} | {pap} ]\n"
+            statistics = self._formation_statistics_message_for_admins(columns)
 
             Senders.sender(chat_id, statistics)
         except Exception as e:
             Senders.sender(chat_id, f"Произошла ошибка при обращении к методу")
             logging.error(f"Ошибка при получении статистики редакторов для администрации: {e}\n{traceback.format_exc()}")
 
+    @staticmethod
+    def _formation_statistics_message_for_admins(columns: dict) -> str:
+        statistics = (
+            f"Статистика редакторов за выбранное количество дней: {columns["days_since_restart"]}\n\n"
+            f"Редактор — [ Опубликовано | Всего | % Одобрения ] \n\n"
+        )
+
+        # Перебор всех редакторов
+        for index, redactor_id in enumerate(columns["ids"]):
+            redactor_id = redactor_id.strip()
+            if redactor_id.isdigit():
+
+                # Сбор информации о редакторе
+                all_posts = columns["all_posts"][index] if index < len(columns["all_posts"]) else 0
+                percent_approved_posts = columns["percent_approved_posts"][index] if index < len(columns["percent_approved_posts"]) else 0
+                posts_sent_for_review = columns["posts_sent_for_review"][index] if index < len(columns["posts_sent_for_review"]) else 0
+                redactor_probation = columns["probation"][index].strip() if index < len(columns["probation"]) else ""
+
+                # Формирование строки редактора
+                if index < len(columns["names"]):
+                    if redactor_probation:
+                        statistics += f"{redactor_probation} [id{redactor_id}|{columns["names"][index]}] — [ {all_posts} | {posts_sent_for_review} | {percent_approved_posts} ]\n"
+                    else:
+                        statistics += f"[id{redactor_id}|{columns["names"][index]}] — [ {all_posts} | {posts_sent_for_review} | {percent_approved_posts} ]\n"
+
+        return statistics
+
     def reset_redactors_statistics(self, chat_id: int):
         """Обнуление статистики (/r)"""
         try:
-            self._rate_limit()
-            sheets = self._get_sheets()
+            self.rate_limit()
 
-            sheets["bot_sheet"].update_acell("B33", datetime.now().strftime("%d.%m.%Y"))
-
-            sheets["bot_sheet"].batch_clear(["B2:C25"])
-            sheets["redactors_sheet"].batch_clear(["A2:E"])
-            sheets["redactors_sheet"].batch_clear(["G2:G"])
-            sheets["stability"].batch_clear(["C2:AF"])
+            threading.Thread(target=self._reset_statistics_thread, daemon=True).start()
 
             Senders.sender(chat_id, "Статистика обнулена")
         except Exception as e:
             Senders.sender(chat_id, f"Произошла ошибка при обращении к методу")
             logging.error(f"Ошибка при сбросе статистики: {e}\n{traceback.format_exc()}")
 
+    def _reset_statistics_thread(self):
+        """Работа с таблицами в отдельном потоке"""
+        sheets = self.get_sheets()
+
+        sheets["bot_sheet"].update_acell("B33", datetime.now().strftime("%d.%m.%Y"))
+
+        sheets["bot_sheet"].batch_clear(["C2:C"])
+        sheets["redactors_sheet"].batch_clear(["A2:E"])
+        sheets["redactors_sheet"].batch_clear(["G2:G"])
+
+        # Получаем размер диапазона
+        range_info = sheets["stability"].get("C2:AH")
+        rows = len(range_info) if range_info else 1
+        cols = 32
+
+        # Заполняем нулями
+        zero_matrix = [[0] * cols for _ in range(rows)]
+        sheets["stability"].update("C2:AH", zero_matrix)
 
 statistics_from_gs = Statistics()

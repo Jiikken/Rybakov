@@ -4,6 +4,7 @@ from src.utils.logs import logging
 from src.services.handlers.chat_messages.controllers.chat_messages import handler_chat_messages
 from src.services.handlers.ls_messages.controllers.ls_messages import handler_ls_messages
 
+
 class HandlerEvents:
     @staticmethod
     def handler_event(event):

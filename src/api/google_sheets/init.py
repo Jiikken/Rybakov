@@ -23,6 +23,8 @@ class GoogleSheets:
             logging.info(f"Подключение к Google Sheets успешно")
             self.last_request_time = 0
             self.min_interval = 1.0
+            self.get_columns()
+            self.get_sheets()
         except Exception as e:
             logging.error(f"Произошла ошибка при подключении к Google Sheets: {e}\n{traceback.format_exc()}")
 
@@ -92,6 +94,7 @@ class GoogleSheets:
         day_reset_stats = sheets["bot_sheet"].acell("B32")
         days_reset_stats = sheets["stability"].row_values(1)
         approved_posts = sheets["bot_sheet"].col_values(3)[1:]
+        days_since_restart = int(sheets["bot_sheet"].acell("B32").value)
 
         columns = {
             "ids": redactors_ids,
@@ -103,7 +106,8 @@ class GoogleSheets:
             "statistics": redactors_statistics,
             "day_reset_stats": day_reset_stats,
             "days_reset_stats": days_reset_stats,
-            "approved_posts": approved_posts
+            "approved_posts": approved_posts,
+            "days_since_restart": days_since_restart
         }
 
         return columns
