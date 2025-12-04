@@ -7,6 +7,11 @@ from src.services.models.senders import Senders
 from src.utils.keyboards import Keyboards
 
 class CommandsForPostsInChat:
+    """
+
+    Модель команд для отправки постов в чат
+
+    """
     @staticmethod
     def enter_post_chat(chat_id: int, user_id: int, event, content_chat: int = 5, admin_chat: int = 1):
         """

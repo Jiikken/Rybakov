@@ -8,6 +8,11 @@ from src.services.models.senders import Senders
 
 
 class CommandsModelChat:
+    """
+
+    Модели команд для проверки постов
+
+    """
     @staticmethod
     def approved_post_chat(chat_id: int, msg: str, content_chat: int = 5, bank_content: int = 4):
         message_id = info_about_posts_in_chat.get_post_id_from_message(chat_id, msg)

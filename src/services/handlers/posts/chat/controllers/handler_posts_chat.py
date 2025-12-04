@@ -7,6 +7,11 @@ from src.utils.logs import logging
 
 
 class HandlerCommandsForPostsInChat(CommandsPosts):
+    """
+
+    Обработчик всех сообщений, связанных с постами в чатах
+
+    """
     def handler_commands_for_posts(self, msg: str, user_id: int, chat_id: int, event: str):
         """
         Обработчик сообщений для отправки постов (чаты)
