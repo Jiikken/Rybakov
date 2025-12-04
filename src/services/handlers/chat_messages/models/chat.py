@@ -11,13 +11,23 @@ from src.database.operations.admins import admins
 
 class ChatModel:
     @staticmethod
-    def cid(chat_id):
-        """Информация о ID текущей беседы"""
+    def cid(chat_id: int):
+        """
+        Информация о ID текущего чата
+
+        :param chat_id: ID чата, где произошло событие
+        """
         Senders.sender(chat_id, f"ID текущей конференции: {chat_id}")
 
     @staticmethod
     def kick_user(chat_id, msg, event):
-        """Кик пользователя"""
+        """
+        Исключение пользователя из чата, где была прописана команда
+
+        :param chat_id: ID чата, где произошло событие
+        :param msg: Сообщение события
+        :param event: Событие
+        """
         user_id = users.give_user_id(chat_id, msg, event)
 
         if user_id in admins.get_admins_list():
