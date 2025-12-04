@@ -6,8 +6,19 @@ from src.services.models.posts import info_about_posts_in_chat
 
 
 class CommandsModelLS:
-    @staticmethod
-    def approved_post_ls(chat_id: int, msg: str, bank_content: int = 4):
+    """
+
+        Модели команд для проверки постов из ЛС
+
+    """
+    def approved_post_ls(self, chat_id: int, msg: str, bank_content: int = 4):
+        """
+        Одобрение поста
+
+        :param chat_id: ID чата, куда прислано сообщение
+        :param msg: Текст сообщения
+        :param bank_content: ID чата для хранения контента, по умолчанию 4
+        """
         message_id = info_about_posts_in_chat.get_post_id_from_message(chat_id, msg)
 
         if message_id > 0:
@@ -29,8 +40,7 @@ class CommandsModelLS:
 
                 posts_google_sheets.summ_approved_posts(user_id, chat_id)
 
-                post_and_user.remove_post_to_user(message_id, chat_id)
-                posts_data_base.remove_post_from_db(message_id, chat_id)
+                self._user_remove_from_db(message_id, chat_id)
 
                 Senders.sender_in_ls(user_id,
                              f"Пост #{message_id} был одобрен!\n\nВ ближайшее время он будет опубликован",
@@ -40,8 +50,14 @@ class CommandsModelLS:
         else:
             Senders.sender(chat_id, "Номер поста должен быть больше нуля")
 
-    @staticmethod
-    def no_approved_post_ls(chat_id: int, msg: str, type: int):
+    def no_approved_post_ls(self, chat_id: int, msg: str, type: int):
+        """
+        Отклонение поста
+
+        :param chat_id: ID чата, куда прислано сообщение
+        :param msg: Текст сообщения
+        :param type: Причина по которой пост отклонён (1 - несмешно, 2 - плагиат, 3 - непрезентабельно)
+        """
         message_id = info_about_posts_in_chat.get_post_id_from_message(chat_id, msg)
 
         if message_id > 0:
@@ -57,8 +73,7 @@ class CommandsModelLS:
 
                 user_id = post_and_user.get_user_by_post(message_id)
 
-                post_and_user.remove_post_to_user(message_id, chat_id)
-                posts_data_base.remove_post_from_db(message_id, chat_id)
+                self._user_remove_from_db(message_id, chat_id)
 
                 if type == 1:
                     Senders.sender_in_ls(user_id,
@@ -76,8 +91,14 @@ class CommandsModelLS:
         else:
             Senders.sender(chat_id, "Номер поста должен быть больше нуля")
 
-    @staticmethod
-    def personal_response_for_ls(chat_id: int, msg: str, user_id: int):
+    def personal_response_for_ls(self, chat_id: int, msg: str, user_id: int):
+        """
+            Персональный ответ пользователю
+
+            :param chat_id: ID чата, куда прислано сообщение
+            :param msg: Текст сообщения
+            :param user_id: ID пользователя, от которого пришло сообщение
+        """
         message_id = info_about_posts_in_chat.get_post_id_from_message_for_personal_response(chat_id, msg)
         post_and_user.add_personal_response_to_post(message_id, user_id)
 
@@ -90,8 +111,7 @@ class CommandsModelLS:
                 response = info_about_posts_in_chat.wait_for_user_input(chat_id, message_id)
                 post_and_user.remove_personal_response_to_post(message_id)
 
-                post_and_user.remove_post_to_user(message_id, chat_id)
-                posts_data_base.remove_post_from_db(message_id, chat_id)
+                self._user_remove_from_db(message_id, chat_id)
 
                 if response:
                     Senders.sender(chat_id, f'Персональный ответ на пост #{message_id} был отправлен')
@@ -108,4 +128,13 @@ class CommandsModelLS:
         else:
             Senders.sender(chat_id, "Номер поста должен быть больше нуля")
 
-    
+    @staticmethod
+    def _user_remove_from_db(message_id: int, chat_id: int):
+        """
+        Удаление связи пользователя с базой данных
+
+        :param message_id: ID сообщения
+        :param chat_id: ID чата куда отправлено сообщение
+        """
+        post_and_user.remove_post_to_user(message_id, chat_id)
+        posts_data_base.remove_post_from_db(message_id, chat_id)

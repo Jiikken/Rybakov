@@ -10,7 +10,7 @@ from src.services.models.senders import Senders
 class CommandsModelChat:
     """
 
-    Модели команд для проверки постов
+    Модели команд для проверки постов из чата
 
     """
     def approved_post_chat(self, chat_id: int, msg: str, content_chat: int = 5, bank_content: int = 4):
