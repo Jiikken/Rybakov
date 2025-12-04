@@ -35,6 +35,7 @@ class Posts(GoogleSheets):
             logging.error(f"Ошибка при суммировании поста: {e}\n{traceback.format_exc()}")
 
     def summ_approved_posts(self, user_id: int, chat_id: int):
+        """Суммирование одобренных постов редактора"""
         try:
             self.rate_limit()
             sheets = self.manager.sheets
@@ -59,6 +60,7 @@ class Posts(GoogleSheets):
             logging.error(f"Ошибка при суммировании одобренного поста: {e}\n{traceback.format_exc()}")
 
     def info_posts_per_month(self, chat_id: int):
+        """Информация о выложенных постах за месяц"""
         try:
             self.rate_limit()
             sheets = self.manager.sheets

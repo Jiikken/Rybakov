@@ -148,6 +148,7 @@ class Statistics(GoogleSheets):
             logging.error(f"Ошибка при получении статистики редакторов для администрации: {e}\n{traceback.format_exc()}")
 
     def _formation_statistics_message_for_admins(self) -> str:
+        """Формировка сообщения о подробной статистике редакторов"""
         redactors = self.manager.redactors_info
         days = self.manager.days
 

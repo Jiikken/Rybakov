@@ -14,6 +14,7 @@ class SpreadsheetManager:
         self._cache_ttl = 300
 
     def create_manager(self):
+        """Создание менеджера для работы с классом"""
         return self
 
     @property

@@ -20,6 +20,7 @@ class RedactorsData:
 
 @dataclass
 class DaysData:
+    """Структурированные данные о днях для статистики"""
     date_reset_stats: Any = None
     days_reset_stats: List[str] = field(default_factory=list)
     days_since_reset_stats: int = 0
