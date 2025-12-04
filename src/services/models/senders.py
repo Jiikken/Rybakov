@@ -6,11 +6,20 @@ from typing import Optional
 from vk_api import ApiError
 
 from src.api.vk.vk import VkConnection
+from src.services.models.posts import info_about_posts_in_chat
 
 
 class Senders:
     @staticmethod
     def sender(chat_id: int, text: str, mid: Optional[str] = None, keyboard: Optional[str] = None):
+        """
+        Метод отправки сообщений в беседы
+
+        :param chat_id: ID чата для отправки (обязательный параметр)
+        :param text: Текст отправляемого сообщения (обязательный параметр)
+        :param mid: Пересылаемое сообщение
+        :param keyboard: Клавиатура для сообщения
+        """
         try:
             VkConnection.vk_session.method('messages.send', {'chat_id': chat_id, 'message': text, 'random_id': 0, 'forward': mid, 'keyboard': keyboard})
         except ApiError as a:
@@ -22,6 +31,15 @@ class Senders:
 
     @staticmethod
     def sender_in_ls(user_id: int, text: str, mid: Optional[str] = None, keyboard: Optional[str] = None, attachment = None):
+        """
+        Метод отправки сообщений в ЛС
+
+        :param user_id: ID пользователя, которому нужно отправить сообщение (обязательный параметр)
+        :param text: Текст отправляемого сообщения (обязательный параметр)
+        :param mid: Пересылаемое сообщение
+        :param keyboard: Клавиатура для сообщения
+        :param attachment: Вложение в сообщение
+        """
         try:
             VkConnection.vk_session.method('messages.send', {'user_id': user_id, 'message': text, 'random_id': 0, 'attachment': attachment, 'forward_messages': mid, 'keyboard': keyboard})
         except Exception as e:
@@ -29,8 +47,15 @@ class Senders:
             logging.error(f"Произошла ошибка при отправке сообщения(sender_in_ls): {e}\n{traceback.format_exc()}")
 
     @staticmethod
-    def resend_in_ls(chat_id: int, text: str, mid: Optional[str], keyboard = None):
-        """resend message from ls"""
+    def resend_from_ls(chat_id: int, text: str, mid: Optional[str], keyboard = None):
+        """
+        Пересылка сообщения из ЛС в чаты
+
+        :param chat_id: ID чата, куда пересылать сообщение (обязательный параметр)
+        :param text: Текст сообщения (обязательный параметр)
+        :param mid: Пересылаемое сообщение (обязательный параметр)
+        :param keyboard: Клавиатура для сообщения
+        """
         try:
             VkConnection.vk_session.method('messages.send', {'chat_id': chat_id, 'message': text, 'random_id': 0, 'forward_messages': mid, 'keyboard': keyboard})
         except Exception as e:
@@ -38,11 +63,18 @@ class Senders:
             logging.error(f"Произошла ошибка при отправке сообщения(resend_in_ls): {e}\n{traceback.format_exc()}")
 
     @staticmethod
-    def get_midd(msg, chat_id, message_from_chat = 5):
-        """Получение пересылаемого JSON для пересылки сообщения"""
+    def get_midd(msg: str, chat_id: int, message_from_chat: int = 5):
+        """
+        Получение пересылаемого JSON для пересылки сообщения
+
+        :param msg: Текст сообщения
+        :param chat_id: ID чата, для того, чтобы узнать ID сообщения
+        :param message_from_chat: ID чата, от куда сообщение (по умолчанию 5)
+        :return:
+        """
         try:
             midd = json.dumps(
-                {'peer_id': 2000000000 + message_from_chat, 'conversation_message_ids': Senders.get_post_id_from_message(chat_id, msg),
+                {'peer_id': 2000000000 + message_from_chat, 'conversation_message_ids': info_about_posts_in_chat.get_post_id_from_message(chat_id, msg),
                  'is_reply': False})
         except Exception as e:
             logging.error(f"Произошла ошибка при нахождения midd: {e}\n{traceback.format_exc()}")

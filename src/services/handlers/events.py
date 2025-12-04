@@ -8,6 +8,7 @@ from src.services.handlers.ls_messages.controllers.ls_messages import handler_ls
 class HandlerEvents:
     @staticmethod
     def handler_event(event):
+        """Обработчик всех событий"""
         try:
             chat_id = event.chat_id
             user_id = event.message.get("from_id")

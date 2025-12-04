@@ -13,7 +13,14 @@ from src.services.models.senders import Senders
 
 class Posts(Senders):
     def info_posts(self, posts: int, approved_posts: int, posts_inspection: int, chat_id: int):
-        """Информация о постах(/fo)"""
+        """
+        Информация о постах за день (/fo)
+
+        :param posts: Кол-во всех отправленных постов на проверку
+        :param approved_posts: Кол-во всех одобренных постов
+        :param posts_inspection: Кол-во непроверенных постов
+        :param chat_id: ID чата
+        """
         try:
             if posts_inspection > 0 or approved_posts > 0 or posts > 0:
                 result_def = self._calculate_statistics_posts(posts, approved_posts)
@@ -29,6 +36,13 @@ class Posts(Senders):
 
     @staticmethod
     def _calculate_statistics_posts(posts: int, approved_posts: int) -> int:
+        """
+        Подсчёт процента одобренных постов за день
+
+        :param posts: Кол-во всех отправленных постов на проверку
+        :param approved_posts: Кол-во всех одобренных постов
+        :return: int
+        """
         try:
             approved_percent_def = approved_posts / posts * 100 if posts and approved_posts else 0
             result_def = round(approved_percent_def, 1) if posts and approved_posts else 0
@@ -38,6 +52,15 @@ class Posts(Senders):
 
     @staticmethod
     def _formation_message_about_statistics_posts(posts: int, approved_posts: int, posts_inspection: int, result_def: int) -> str:
+        """
+        Формирование сообщения о статистике постов за день
+
+        :param posts: Кол-во всех отправленных постов на проверку
+        :param approved_posts: Кол-во всех одобренных постов
+        :param posts_inspection: Кол-во непроверенных постов
+        :param result_def: Процент одобрения постов
+        :return: string
+        """
         try:
             current_date = datetime.now()
             day = current_date.day
@@ -60,8 +83,14 @@ class Posts(Senders):
         except Exception as e:
             logging.error(f"Ошибка при формировании сообщения: {e}\n{traceback.format_exc()}")
 
-    def get_post_id_from_message(self, chat_id, msg):
-        """Получение chat_id сообщения по числу в сообщении"""
+    def get_post_id_from_message(self, chat_id: int, msg: str) -> int:
+        """
+        Получение message_id по сообщению
+
+        :param chat_id: ID чата
+        :param msg: Текст сообщения
+        :return: int
+        """
         try:
             if "@rybakovbot" in msg:
                 message_id = int(msg.split(' ')[2])
@@ -76,8 +105,14 @@ class Posts(Senders):
 
         return message_id
 
-    def get_post_id_from_message_for_personal_response(self, chat_id, msg):
-        """Получение chat_id сообщения по числу в сообщении"""
+    def get_post_id_from_message_for_personal_response(self, chat_id: int, msg: str):
+        """
+        Получение message_id по сообщению (для персонального ответа)
+
+        :param chat_id: ID чата
+        :param msg: Текст сообщения
+        :return: int
+        """
         try:
             if "@rybakovbot" in msg:
                 message_id = int(msg.split(' ')[3])
@@ -93,8 +128,15 @@ class Posts(Senders):
         return message_id
 
     @staticmethod
-    def wait_for_user_input(chat_id, message_id, timeout=60):
-        """Для персонального ответа"""
+    def wait_for_user_input(chat_id: int, message_id: str, timeout: int = 60) -> str:
+        """
+        Ожидание персонального ответа от администратора
+
+        :param chat_id: ID чата
+        :param message_id: Текст сообщения
+        :param timeout: Время ожидания (По умолчанию 60 секунд)
+        :return: string
+        """
         start_time = time.time()
         while (time.time() - start_time) < timeout:
             for event in VkConnection.longpoll.listen():
@@ -106,6 +148,6 @@ class Posts(Senders):
                             return user_response
 
         Senders.sender(chat_id, 'Время ожидания истекло')
-        return None
+        return "нужно переделать этот пост ;)"
 
 info_about_posts_in_chat = Posts()

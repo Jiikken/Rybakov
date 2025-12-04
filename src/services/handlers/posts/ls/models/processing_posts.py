@@ -26,5 +26,5 @@ class CommandsForPostsInLS:
             posts_data_base.change_posts_inspection(True)
             posts_data_base.change_posts(True)
 
-            Senders.resend_in_ls(admin_chat, f"Внимание! Новая идея для поста #{message_id}", message_id,
+            Senders.resend_from_ls(admin_chat, f"Внимание! Новая идея для поста #{message_id}", message_id,
                          keyboard=Keyboards.create_buttons_ls(message_id))

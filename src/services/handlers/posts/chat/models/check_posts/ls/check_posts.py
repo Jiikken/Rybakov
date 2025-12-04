@@ -45,7 +45,7 @@ class CommandsModelLS:
                 Senders.sender_in_ls(user_id,
                              f"Пост #{message_id} был одобрен!\n\nВ ближайшее время он будет опубликован",
                              message_id)
-                Senders.resend_in_ls(bank_content, f'', message_id)
+                Senders.resend_from_ls(bank_content, f'', message_id)
 
         else:
             Senders.sender(chat_id, "Номер поста должен быть больше нуля")
