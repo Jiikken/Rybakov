@@ -1,17 +1,17 @@
 import time
 
 from src.api.google_sheets.sheet_data import RedactorsData, SheetsData, DaysData
-from src.api.google_sheets.google_sheets import google_sheets
 
 
 class SpreadsheetManager:
     """Информация о редакторах"""
-    def __init__(self):
+    def __init__(self, google_sheets):
+        self._gs = google_sheets
         self._sheets_cache = None
         self._columns_cache = None
         self._days_cache = None
         self._cache_timestamp = None
-        self._cache_ttl = 3600
+        self._cache_ttl = 300
 
     def create_manager(self):
         return self
@@ -47,13 +47,12 @@ class SpreadsheetManager:
         # Проверяем TTL (Time To Live)
         return (time.time() - self._cache_timestamp) > self._cache_ttl
 
-    @staticmethod
-    def _load_sheets() -> SheetsData:
+    def _load_sheets(self) -> SheetsData:
         """Загрузка таблиц"""
-        stats_sheet = google_sheets.get_sheet("Статистика")
-        bot_sheet = google_sheets.get_sheet("Информация для бота")
-        redactors_work_sheet = google_sheets.get_sheet("Работа")
-        stability = google_sheets.get_sheet("Стабильность")
+        stats_sheet = self._gs.get_sheet("Статистика")
+        bot_sheet = self._gs.get_sheet("Информация для бота")
+        redactors_work_sheet = self._gs.get_sheet("Работа")
+        stability = self._gs.get_sheet("Стабильность")
 
         return SheetsData(
             stats=stats_sheet,

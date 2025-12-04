@@ -9,7 +9,7 @@ class PostsModel:
     @staticmethod
     def handle_enter_post_in_ls(user_id, event, admin_chat = 1):
         """Отправка поста на проверку в ЛС"""
-        if posts_google_sheets.Posts.inactive_user(user_id):
+        if posts_google_sheets.inactive_user(user_id):
             Senders.sender_in_ls(user_id,
                          "На данный момент, я не могу рассмотреть от Вас материал, так как Вы находитесь в неактиве")
         else:

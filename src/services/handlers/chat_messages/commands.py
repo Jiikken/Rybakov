@@ -33,7 +33,7 @@ class CommandsInChat(ChatModel, StatisticsModel, AdminsModel, PostsModel):
                 "admin_only": True,
                 "params": ["chat_id"]
             },
-            "/infopostt": {
+            "/infopost": {
                 "handler": self.info_posts_per_month,
                 "admin_only": True,
                 "params": ["chat_id"]

@@ -1,16 +1,11 @@
 import logging
 import traceback
 
-from src.api.google_sheets.google_sheets import GoogleSheets
+from src.api.google_sheets.connection import GoogleSheets
 from src.services.models.senders import Senders
-from src.api.google_sheets.spread_sheet_manager import SpreadsheetManager
 
 
-class Posts(GoogleSheets, SpreadsheetManager):
-    def __init__(self):
-        super().__init__()
-        self.manager = SpreadsheetManager().create_manager()
-
+class Posts(GoogleSheets):
     def summ_posts(self, user_id: int, chat_id: int = 2):
         """Метод для статистики количества постов отправленных от пользователя"""
         try:
