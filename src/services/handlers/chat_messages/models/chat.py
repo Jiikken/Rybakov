@@ -13,16 +13,16 @@ class ChatModel:
     @staticmethod
     def cid(chat_id: int):
         """
-        Информация о ID текущего чата
+        Информация о ID текущего чата (/cid)
 
         :param chat_id: ID чата, где произошло событие
         """
         Senders.sender(chat_id, f"ID текущей конференции: {chat_id}")
 
     @staticmethod
-    def kick_user(chat_id, msg, event):
+    def kick_user(chat_id: int, msg: str, event):
         """
-        Исключение пользователя из чата, где была прописана команда
+        Исключение пользователя из чата, где была прописана команда (/kick)
 
         :param chat_id: ID чата, где произошло событие
         :param msg: Сообщение события
