@@ -23,7 +23,7 @@ class SpreadsheetManager(GoogleSheets):
         return self._sheets_cache
 
     @property
-    def columns(self) -> RedactorsData:
+    def redactors_info(self) -> RedactorsData:
         """Кэшированные колонки"""
         if self._columns_cache is None or self._should_refresh_cache():
             self._columns_cache = self._load_columns()
@@ -79,9 +79,9 @@ class SpreadsheetManager(GoogleSheets):
         sheets = self.sheets
 
         return DaysData(
-            day_reset_stats=sheets.bot_sheet.acell("B32"),
+            date_reset_stats=sheets.bot_sheet.acell("B32"),
             days_reset_stats=sheets.stability.row_values(1),
-            days_since_restart=int(sheets.bot_sheet.acell("B32").value)
+            days_since_reset_stats=int(sheets.bot_sheet.acell("B32").value)
         )
 
     def invalidate_cache(self):

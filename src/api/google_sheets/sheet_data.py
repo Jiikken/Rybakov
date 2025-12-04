@@ -20,9 +20,9 @@ class RedactorsData:
 
 @dataclass
 class DaysData:
-    day_reset_stats: Any = None
+    date_reset_stats: Any = None
     days_reset_stats: List[str] = field(default_factory=list)
-    days_since_restart: int = 0
+    days_since_reset_stats: int = 0
     loaded_at: datetime = field(default_factory=datetime.now)
 
 @dataclass

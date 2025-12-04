@@ -2,7 +2,7 @@ import logging
 import traceback
 
 from src.services.models.senders import Senders
-from src.api.google_sheets.init import GoogleSheets
+from src.api.google_sheets.google_sheets import GoogleSheets
 
 
 class Posts(GoogleSheets):
@@ -10,11 +10,13 @@ class Posts(GoogleSheets):
         """Метод для статистики количества постов отправленных от пользователя"""
         try:
             self.rate_limit()
-            sheets = self.get_sheets()
+            sheets = self.manager.sheets
+            redactors = self.manager.redactors_info
+            days = self.manager.days
 
-            redactors_ids = sheets["stability"].col_values(2)[1:]
-            day_reset_stats = sheets["bot_sheet"].acell("B32")
-            days_reset_stats = sheets["stability"].row_values(1)
+            redactors_ids = redactors.ids
+            day_reset_stats = days.day_reset_stats
+            days_reset_stats = days.days_reset_stats
 
             for index, redactor_id in enumerate(redactors_ids):
                 redactor_id = redactor_id.strip()
@@ -23,10 +25,10 @@ class Posts(GoogleSheets):
                     if str(user_id) == str(redactor_id):
                         for i in days_reset_stats:
                             if day_reset_stats.value == i:
-                                current_count = int(sheets["stability"].cell(index + 2, int(i) + 2).value)
+                                current_count = int(sheets.stability.cell(index + 2, int(i) + 2).value)
                                 new_value = current_count + 1
 
-                                sheets["stability"].update_cell(index + 2, int(i) + 2, new_value)
+                                sheets.stability.update_cell(index + 2, int(i) + 2, new_value)
 
         except Exception as e:
             Senders.sender(chat_id, f"Произошла ошибка при обращении к методу")
@@ -35,20 +37,21 @@ class Posts(GoogleSheets):
     def summ_approved_posts(self, user_id: int, chat_id: int):
         try:
             self.rate_limit()
-            sheets = self.get_sheets()
+            sheets = self.manager.sheets
+            redactors = self.manager.redactors_info
 
-            redactors_ids = sheets["bot_sheet"].col_values(1)[1:]
-            column_percent_approved_posts = int(sheets["bot_sheet"].row_values(1).index("Одобренные посты") + 1)
+            redactors_ids = redactors.ids
+            approved_posts = int(redactors.approved_posts + 1)
 
             for i, value in enumerate(redactors_ids):
                 if str(user_id) == str(value):
 
                     # Получаем текущее значение из столбца I в соответствующей строке
-                    current_count = int(sheets["bot_sheet"].cell(i + 2, column_percent_approved_posts).value or 0)
+                    current_count = int(sheets.bot_sheet.cell(i + 2, approved_posts).value or 0)
                     new_value = current_count + 1
 
                     # Обновляем ячейку в столбце I
-                    sheets["bot_sheet"].update_cell(i + 2, column_percent_approved_posts, new_value)
+                    sheets.bot_sheet.update_cell(i + 2, approved_posts, new_value)
 
                     break
         except Exception as e:
@@ -58,11 +61,12 @@ class Posts(GoogleSheets):
     def info_posts_per_month(self, chat_id: int):
         try:
             self.rate_limit()
-            sheets = self.get_sheets()
+            sheets = self.manager.sheets
+            days = self.manager.days
 
             percent_public_posts = sheets["bot_sheet"].acell("B31").value
-            days_since_reset_stats = sheets["bot_sheet"].acell("B32").value
-            date_reset_stats = sheets["bot_sheet"].acell("B33").value
+            days_since_reset_stats = days.days_since_reset_stats
+            date_reset_stats = days.date_reset_stats
             posts_public_now = sheets["bot_sheet"].acell("B34").value
             all_posts_public = sheets["bot_sheet"].acell("B30").value
             photo_mat = sheets["bot_sheet"].acell("B28").value
@@ -77,17 +81,18 @@ class Posts(GoogleSheets):
         """Проверка на неактив у пользователя"""
         try:
             self.rate_limit()
-            sheets = self.get_sheets()
+            sheets = self.manager.sheets
+            redactors = self.manager.redactors_info
 
-            column_m = sheets["stats"].col_values(10)[1:]  # 13 — это индекс столбца с IDs редакторов
+            redactors_ids = redactors.ids
 
-            for i, value in enumerate(column_m):
+            for i, value in enumerate(redactors_ids):
                 if value.strip() == "":
                     continue
 
                 if str(user_id) == str(value):
 
-                    current_count = (sheets["stats"].cell(i + 1, 11).value or "").lower()
+                    current_count = (sheets.stats.cell(i + 1, 11).value or "").lower()
                     if current_count == "неактив":
                         return True
                     else:
