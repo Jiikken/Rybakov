@@ -1,9 +1,12 @@
 from dataclasses import dataclass, field
-from typing import List, Dict, Any
 from datetime import datetime
+from typing import List, Any
+
+from gspread import Worksheet
+
 
 @dataclass
-class SheetData:
+class ColumnsData:
     """Структурированные данные из таблицы"""
     ids: List[str] = field(default_factory=list)
     names: List[str] = field(default_factory=list)
@@ -17,3 +20,11 @@ class SheetData:
     days_reset_stats: List[str] = field(default_factory=list)
     days_since_restart: int = 0
     loaded_at: datetime = field(default_factory=datetime.now)
+
+@dataclass
+class SheetsData:
+    """Структурированные таблицы"""
+    stats: Worksheet = field(default_factory=str)
+    bot_sheet: Worksheet = field(default_factory=str)
+    redactors_sheet: Worksheet = field(default_factory=str)
+    stability: Worksheet = field(default_factory=str)
