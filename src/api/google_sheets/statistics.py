@@ -13,27 +13,11 @@ class Statistics(GoogleSheets):
         """Получение статистики редакторов"""
         try:
             self.rate_limit()
-            redactors = self.manager.redactors_info
             days = self.manager.days
 
-            if len(msg.split(" ")) > 1:
-                select_days = self._validation_days_since_restart(msg, days.days_since_reset_stats, chat_id)
-            else:
-                select_days = days.days_since_reset_stats
-
-            # Инициализация статистики
-            posts_stats = [0] * len(redactors.ids)
-
-            # Если выбран период - собираем статистику по постам
-            if len(msg.split(" ")) > 1:
-                posts_stats = self._get_stats_about_posts(select_days, posts_stats)
-            else:
-                current_posts = redactors.statistics
-
-                for i in range(len(redactors.ids)):
-                    posts_stats[i] = int(current_posts[i]) if i < len(current_posts) and str(current_posts[i]).isdigit() else 0
-
-            statistics = f"{self._formation_statistics_message(msg, select_days, posts_stats)}"
+            select_days = self._validation_days_since_restart(msg, days.days_since_reset_stats, chat_id)
+            posts_stats = self._get_stats_about_posts(msg, select_days)
+            statistics = self._formation_statistics_message(msg, select_days, posts_stats)
 
             Senders.sender(chat_id, statistics)
 
@@ -41,8 +25,7 @@ class Statistics(GoogleSheets):
             Senders.sender(chat_id, f"Произошла ошибка при обращении к методу")
             logging.error(f"Ошибка при получении статистики редакторов: {e}\n{traceback.format_exc()}")
 
-    @staticmethod
-    def _validation_days_since_restart(msg: str, days_since_restart: int, chat_id: int) -> int:
+    def _validation_days_since_restart(self, msg: str, days_since_restart: int, chat_id: int) -> int:
         """
         Проверка введённых дней для сбора статистики
 
@@ -52,38 +35,58 @@ class Statistics(GoogleSheets):
 
         :return: select days
         """
-        try:
-            select_days = int(msg.split(" ")[1])
-            if select_days > days_since_restart:
-                Senders.sender(chat_id, f"Информации за этот период ещё нет (максимум дней: {days_since_restart})")
-                raise ValueError("Введено число превышающее истинное значение")
-            if select_days < 0:
-                Senders.sender(chat_id, f"Не могу показать информацию за минусовой период")
-                raise ValueError("Введено число отрицательное число")
-            return select_days
-        except ValueError:
-            Senders.sender(chat_id, "Не могу отправить статистику за данный период")
-            raise ValueError("Что-то введено неверно")
+        days = self.manager.days
 
-    def _get_stats_about_posts(self, select_days: int, posts_stats: list) -> list:
+        if len(msg.split(" ")) > 1:
+            try:
+                select_days = int(msg.split(" ")[1])
+                if select_days > days_since_restart:
+                    Senders.sender(chat_id, f"Информации за этот период ещё нет (максимум дней: {days_since_restart})")
+                    raise ValueError("Введено число превышающее истинное значение")
+                if select_days < 0:
+                    Senders.sender(chat_id, f"Не могу показать информацию за минусовой период")
+                    raise ValueError("Введено число отрицательное число")
+            except ValueError:
+                Senders.sender(chat_id, "Не могу отправить статистику за данный период")
+                raise ValueError("Что-то введено неверно")
+        else:
+            select_days = days.days_since_reset_stats
+
+        return select_days
+
+
+    def _get_stats_about_posts(self, msg:str, select_days: int) -> list:
         """
         Получение информации о постах за выбранных период из таблицы
 
+        :param msg:
         :param select_days:
-        :param posts_stats:
 
         :return: post_stats
         """
-        start_col = 2 + (self.manager.days.days_since_reset_stats - select_days + 1)
-        end_col = 2 + self.manager.days.days_since_reset_stats
 
-        for col in range(start_col, end_col + 1):
-            day_posts = self.manager.sheets.stability.col_values(col)[1:]
-            for i in range(len(self.manager.redactors_info.ids)):
-                try:
-                    posts_stats[i] += int(day_posts[i]) if i < len(day_posts) and str(day_posts[i]).isdigit() else 0
-                except (IndexError, ValueError):
-                    continue
+        sheets = self.manager.sheets
+        redactors = self.manager.redactors_info
+        days = self.manager.days
+        posts_stats = [0] * len(redactors.ids)
+
+        if len(msg.split(" ")) > 1:
+            start_col = 2 + (days.days_since_reset_stats - select_days + 1)
+            end_col = 2 + days.days_since_reset_stats
+
+            for col in range(start_col, end_col + 1):
+                day_posts = sheets.stability.col_values(col)[1:]
+                for i in range(len(redactors.ids)):
+                    try:
+                        posts_stats[i] += int(day_posts[i]) if i < len(day_posts) and str(day_posts[i]).isdigit() else 0
+                    except (IndexError, ValueError):
+                        continue
+        else:
+            current_posts = redactors.statistics
+
+            for i in range(len(redactors.ids)):
+                posts_stats[i] = int(current_posts[i]) if i < len(current_posts) and str(
+                    current_posts[i]).isdigit() else 0
 
         return posts_stats
 
@@ -130,7 +133,7 @@ class Statistics(GoogleSheets):
                         else:
                             statistics += f"[id{redactor_id}|{redactors.names[index]}] — [ {posts_count} ]\n"
 
-            return statistics
+        return statistics
 
     def redactors_statistics_for_admins(self, chat_id: int):
         """Получение статистики редакторов для администрации"""
@@ -155,6 +158,7 @@ class Statistics(GoogleSheets):
 
         # Перебор всех редакторов
         for index, redactor_id in enumerate(redactors.ids):
+            print(index, redactor_id, redactors.ids)
             redactor_id = redactor_id.strip()
             if redactor_id.isdigit():
 
