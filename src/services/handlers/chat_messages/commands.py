@@ -14,8 +14,8 @@ class CommandsInChat(ChatModel, StatisticsModel, AdminsModel, PostsModel):
     - /r -- Обнуление статистики редакторов
     - /admins -- Список администрации бота
     - /posts -- Список непроверенных постов
-    - /fo -- Информация об отправленных постах за день
-    - /infopost -- Информация о выложенных постах за промежуток со сброса статистики
+    - /ipd -- Информация об отправленных постах за день
+    - /ipm -- Информация о выложенных постах за промежуток со сброса статистики
 
     Не строгие:
 
@@ -49,24 +49,24 @@ class CommandsInChat(ChatModel, StatisticsModel, AdminsModel, PostsModel):
                 "admin_only": True,
                 "params": ["chat_id"]
             },
-            "/fo": {
+            "/ipd": {
                 "handler": self.info_posts_per_day,
                 "admin_only": True,
                 "params": ["chat_id"]
             },
-            "/infopost": {
+            "/ipm": {
                 "handler": self.info_posts_per_month,
                 "admin_only": True,
                 "params": ["chat_id"]
             }
         }
         self.not_strict_commands = {
-            "/i": {
+            "/s": {
                 "handler": self.redactors_statistics,
                 "admin_only": True,
                 "params": ["msg", "chat_id"]
             },
-            "/ai": {
+            "/as": {
                 "handler": self.redactors_statistics_for_admins,
                 "admin_only": True,
                 "params": ["chat_id"]
