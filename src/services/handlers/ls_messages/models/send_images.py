@@ -9,8 +9,12 @@ from src.utils.logs import logging
 
 class SendImagesModel:
     @staticmethod
-    def send_cheburek(user_id):
-        """Отправляет загруженное фото чебурека"""
+    def send_cheburek(user_id: int):
+        """
+        Отправляет загруженное фото чебурека
+
+        :param user_id: ID пользователя, которому нужно отправить чебурек
+        """
         try:
             # Загружаем фото на сервер ВК
             cheburk = "Rybakov/src/photos/чебурек.jpg"
@@ -25,7 +29,11 @@ class SendImagesModel:
 
     @staticmethod
     def send_dikiy_ogyrec(user_id):
-        """Отправляет загруженное фото чебурека"""
+        """
+        Отправляет загруженное фото дикого огурца
+
+        :param user_id: ID пользователя, которому нужно отправить дикий огурец
+        """
         try:
             # Загружаем фото на сервер ВК
             cheburk = "Rybakov/src/photos/дикий огурец.jpg"
