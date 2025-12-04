@@ -1,3 +1,4 @@
+import json
 import logging
 import time
 import traceback
@@ -149,5 +150,26 @@ class Posts(Senders):
 
         Senders.sender(chat_id, 'Время ожидания истекло')
         return "нужно переделать этот пост ;)"
+
+    @staticmethod
+    def get_midd(msg: str, chat_id: int, message_from_chat: int = 5):
+        """
+        Получение пересылаемого JSON для пересылки сообщения
+
+        :param msg: Текст сообщения
+        :param chat_id: ID чата, для того, чтобы узнать ID сообщения
+        :param message_from_chat: ID чата, от куда сообщение (по умолчанию 5)
+        :return:
+        """
+        try:
+            midd = json.dumps(
+                {'peer_id': 2000000000 + message_from_chat,
+                 'conversation_message_ids': info_about_posts_in_chat.get_post_id_from_message(chat_id, msg),
+                 'is_reply': False})
+        except Exception as e:
+            logging.error(f"Произошла ошибка при нахождения midd: {e}\n{traceback.format_exc()}")
+            midd = None
+
+        return midd
 
 info_about_posts_in_chat = Posts()
