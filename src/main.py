@@ -11,14 +11,9 @@ from src.utils.logs import logging
 from api.vk.vk import VkConnection
 from src.services.handlers.events import HandlerEvents
 from src.utils.thread import ThreadModel
-from src.api.google_sheets.init import GoogleSheets
-
 
 try:
     threading.Thread(target=ThreadModel.thread_info_posts, daemon=True).start()
-
-    for i in range(1):
-        GoogleSheets()
 
     for event in VkConnection.longpoll.listen():
         if event.type == VkBotEventType.MESSAGE_NEW:

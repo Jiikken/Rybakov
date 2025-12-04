@@ -4,7 +4,7 @@ import traceback
 from datetime import datetime
 from typing import Optional
 
-from src.api.google_sheets.init import GoogleSheets
+from src.api.google_sheets.google_sheets import GoogleSheets
 from src.services.models.senders import Senders
 
 

@@ -6,8 +6,8 @@ from gspread import Worksheet
 
 
 @dataclass
-class ColumnsData:
-    """Структурированные данные из таблицы"""
+class RedactorsData:
+    """Структурированные данные о редакторах из таблиц"""
     ids: List[str] = field(default_factory=list)
     names: List[str] = field(default_factory=list)
     probation: List[str] = field(default_factory=list)
@@ -16,6 +16,10 @@ class ColumnsData:
     percent_approved_posts: List[str] = field(default_factory=list)
     statistics: List[str] = field(default_factory=list)
     approved_posts: List[str] = field(default_factory=list)
+    loaded_at: datetime = field(default_factory=datetime.now)
+
+@dataclass
+class DaysData:
     day_reset_stats: Any = None
     days_reset_stats: List[str] = field(default_factory=list)
     days_since_restart: int = 0

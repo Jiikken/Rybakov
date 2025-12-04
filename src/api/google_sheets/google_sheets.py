@@ -8,6 +8,7 @@ from google.oauth2.service_account import Credentials
 from gspread import Worksheet
 from vk_api import ApiError
 
+from src.api.google_sheets.spread_sheet_manager import SpreadsheetManager
 from src.config import config
 
 
@@ -24,6 +25,8 @@ class GoogleSheets:
             logging.info(f"Подключение к Google Sheets успешно")
             self.last_request_time = 0
             self.min_interval = 1.0
+
+            self.manager = SpreadsheetManager()
         except Exception as e:
             logging.error(f"Произошла ошибка при подключении к Google Sheets: {e}\n{traceback.format_exc()}")
 
