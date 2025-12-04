@@ -10,6 +10,7 @@ from src.services.models.senders import Senders
 class ThreadModel:
     @staticmethod
     def thread_info_posts():
+        """Метод для ежедневного оповещения редакторов о статистике постов за день"""
         while True:
             current_time = time.localtime()
             if current_time.tm_hour == 21 and current_time.tm_min == 0:
