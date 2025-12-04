@@ -10,6 +10,15 @@ from src.services.handlers.chat_messages.commands import CommandsInChat
 handler_commands_for_posts_in_chat = HandlerCommandsForPostsInChat()
 class HandlerChatMessages(CommandsInChat):
     def handler_chat_message(self, msg: str, user_id: int, chat_id: int, event):
+        """
+        Обработчик сообщений в чате
+
+        :param msg:
+        :param user_id:
+        :param chat_id:
+        :param event:
+
+        """
         forward_command = self._find_command(msg, user_id, chat_id, event)
 
         if forward_command:
@@ -27,6 +36,16 @@ class HandlerChatMessages(CommandsInChat):
                     logging.error(f"Ошибка при выполнении команды {forward_command}: {e}\n{traceback.format_exc()}")
 
     def _find_command(self, msg: str, user_id: int, chat_id: int, event) -> str:
+        """
+        Поиск команды в сообщении пользователя
+
+        :param msg:
+        :param user_id:
+        :param chat_id:
+        :param event:
+
+        :return: string
+        """
         forward_command = None
 
         for cmd in self.strict_commands:
@@ -46,6 +65,17 @@ class HandlerChatMessages(CommandsInChat):
 
     @staticmethod
     def _fill_dictionary(command: dict, chat_id: int, msg: str, user_id: int, event) -> dict:
+        """
+        Заполнение словаря параметрами
+
+        :param command:
+        :param chat_id:
+        :param msg:
+        :param user_id:
+        :param event:
+
+        :return: dictionary
+        """
         params = {}
 
         for param in command["params"]:
