@@ -34,7 +34,7 @@ class HandlerCommandsForPostsInChat(CommandsPosts):
                     Senders.sender(chat_id, f"Произошла ошибка при выполнении команды")
                     logging.error(f"Ошибка в команде {msg}: {e}\n{traceback.format_exc()}")
 
-            elif not command["admin_only"] and chat_id == 5:
+            elif not command["admin_only"] and chat_id == 2:
                 try:
                     CommandsForPostsInChat.enter_post_chat(chat_id, user_id, event)
                 except Exception as e:
@@ -95,3 +95,5 @@ class HandlerCommandsForPostsInChat(CommandsPosts):
                 params["type"] = 3
 
         return params
+
+handler_commands_for_posts_in_chat = HandlerCommandsForPostsInChat()

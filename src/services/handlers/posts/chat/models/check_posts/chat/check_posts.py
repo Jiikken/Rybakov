@@ -46,8 +46,8 @@ class CommandsModelChat:
 
                 Senders.sender(content_chat,
                        f"Пост #{message_id} был одобрен!\n\nВ ближайшее время он будет опубликован",
-                       f"{Senders.get_midd(msg, chat_id)}")
-                Senders.sender(bank_content, f'', f"{Senders.get_midd(msg, chat_id)}")
+                       f"{info_about_posts_in_chat.get_mid(msg, chat_id)}")
+                Senders.sender(bank_content, f'', f"{info_about_posts_in_chat.get_mid(msg, chat_id)}")
 
         else:
             Senders.sender(chat_id, "Номер поста должен быть больше нуля")
@@ -79,20 +79,20 @@ class CommandsModelChat:
                 if type == 1:
                     Senders.sender(content_chat,
                            f"Пост #{info_about_posts_in_chat.get_post_id_from_message(chat_id, msg)} был отклонен по следующей причине причине: материал не выглядит юмористическим. Возможно, стоит доработать идеи или подойти с другой стороны",
-                           f"{Senders.get_midd(msg, chat_id)}")
+                           f"{info_about_posts_in_chat.get_mid(msg, chat_id)}")
                 elif type == 2:
                     Senders.sender(content_chat,
                            f"Пост #{info_about_posts_in_chat.get_post_id_from_message(chat_id, msg)} был отклонен по следующей причине причине: к сожалению, Ваш материал отклонён, так как в нём обнаружен плагиат",
-                           f"{Senders.get_midd(msg, chat_id)}")
+                           f"{info_about_posts_in_chat.get_mid(msg, chat_id)}")
                 elif type == 3:
                     Senders.sender(content_chat,
                            f"Пост #{info_about_posts_in_chat.get_post_id_from_message(chat_id, msg)} был отклонен по следующей причине причине: к сожалению, мы не можем принять этот материал, так как он не соответствует требованиям к презентабельности",
-                           f"{Senders.get_midd(msg, chat_id)}")
+                           f"{info_about_posts_in_chat.get_mid(msg, chat_id)}")
 
         else:
             Senders.sender(chat_id, "Номер поста должен быть больше нуля")
 
-    def personal_response_for_chat(self, chat_id: int, msg: str, user_id: int, content_chat: int = 5):
+    def personal_response_for_chat(self, chat_id: int, msg: str, user_id: int, content_chat: int = 2):
         """
         Персональный ответ пользователю
 
@@ -102,13 +102,13 @@ class CommandsModelChat:
         :param content_chat: ID чата для отправки контента, по умолчанию 5
         """
         message_id = info_about_posts_in_chat.get_post_id_from_message_for_personal_response(chat_id, msg)
-        post_and_user.add_personal_response_to_post(message_id, user_id)
 
         if message_id > 0:
             if str(message_id) not in posts_data_base.get_no_check_posts_list():
                 Senders.sender(chat_id, f"Пост #{message_id} уже проверен")
 
             elif message_id:
+                post_and_user.add_personal_response_to_post(message_id, user_id)
                 Senders.sender(chat_id, 'Пожалуйста, введите текст для персонального ответа, с маленькой буквы')
                 response = info_about_posts_in_chat.wait_for_user_input(chat_id, message_id)
                 post_and_user.remove_personal_response_to_post(message_id)

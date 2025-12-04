@@ -10,7 +10,7 @@ from src.utils.keyboards import Keyboards
 
 
 class HandlerLSMessages(CommandsInLS):
-    def handler_ls_messages(self, msg: str, user_id: int, event: str):
+    def handler_ls_message(self, msg: str, user_id: int, event: str):
         """
         Обработчик сообщений в ЛС
 
@@ -18,9 +18,14 @@ class HandlerLSMessages(CommandsInLS):
         :param msg: Сообщение из события
         :param event: Событие
         """
+        print(163)
         forward_message = self._find_command(msg)
+        print(2)
+        if forward_message is None:
+            handler_commands_for_posts_in_ls.handler_commands_for_posts()
 
         if forward_message:
+            print(3)
             command = self.commands_for_posts_admin.get(forward_message)
             try:
                 command["handler"](user_id, event)
@@ -33,6 +38,7 @@ class HandlerLSMessages(CommandsInLS):
         elif msg.lower() == "пельмень":
             SendImagesModel.send_dikiy_ogyrec(user_id)
         else:
+            print(4)
             Senders.sender_in_ls(user_id, f"Здравствуйте, {Users.info_user(user_id)}\n\nХотите чебурек?", keyboard=Keyboards.cheburek())
 
     def _find_command(self, msg: str) -> str:
@@ -47,9 +53,6 @@ class HandlerLSMessages(CommandsInLS):
         for cmd in self.commands_for_posts_admin:
             if cmd.lower() in msg.lower():
                 forward_message = cmd
-
-        if forward_message is None:
-            handler_commands_for_posts_in_ls.handler_commands_for_posts()
 
         return forward_message
 

@@ -2,12 +2,11 @@ from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 
 class Keyboards:
     @staticmethod
-    def create_buttons(mid: int) -> VkKeyboard:
+    def create_buttons(mid: int):
         """
         Клавиатура для проверки постов из беседы
 
         :param mid: ID поста
-        :return: VkKeyboard
         """
         keyboard = VkKeyboard(one_time=False, inline=True)
         keyboard.add_button(label=f"#Одобрено {mid}", color=VkKeyboardColor.POSITIVE)
@@ -20,12 +19,11 @@ class Keyboards:
         return keyboard.get_keyboard()
     
     @staticmethod
-    def create_buttons_ls(mid: int) -> VkKeyboard:
+    def create_buttons_ls(mid: int):
         """
         Клавиатура для проверки постов из ЛС
 
         :param mid: ID поста
-        :return: VkKeyboard
         """
         keyboard = VkKeyboard(one_time=False, inline=True)
         keyboard.add_button(label=f"#Oдобрено {mid}", color=VkKeyboardColor.POSITIVE)
@@ -38,12 +36,8 @@ class Keyboards:
         return keyboard.get_keyboard()
     
     @staticmethod
-    def cheburek() -> VkKeyboard:
-        """
-        Клавиатура для выбора между огурцом и чебуреком
-
-        :return: VkKeyboard
-        """
+    def cheburek():
+        """Клавиатура для выбора между огурцом и чебуреком"""
         keyboard = VkKeyboard(one_time=False, inline=True)
         keyboard.add_button(label=f"Хочу", color=VkKeyboardColor.POSITIVE)
         keyboard.add_button(label=f"Пельмень", color=VkKeyboardColor.NEGATIVE)

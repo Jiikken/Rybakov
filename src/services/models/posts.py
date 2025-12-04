@@ -152,7 +152,7 @@ class Posts(Senders):
         return "нужно переделать этот пост ;)"
 
     @staticmethod
-    def get_midd(msg: str, chat_id: int, message_from_chat: int = 5):
+    def get_mid(msg: str, chat_id: int, message_from_chat: int = 5):
         """
         Получение пересылаемого JSON для пересылки сообщения
 

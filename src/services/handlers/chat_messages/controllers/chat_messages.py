@@ -3,11 +3,10 @@ import traceback
 
 from src.database.operations.admins import admins
 from src.services.models.senders import Senders
-from src.services.handlers.posts.chat.controllers.handler_posts_chat import HandlerCommandsForPostsInChat
+from src.services.handlers.posts.chat.controllers.handler_posts_chat import handler_commands_for_posts_in_chat
 from src.services.handlers.chat_messages.commands import CommandsInChat
 
 
-handler_commands_for_posts_in_chat = HandlerCommandsForPostsInChat()
 class HandlerChatMessages(CommandsInChat):
     def handler_chat_message(self, msg: str, user_id: int, chat_id: int, event):
         """

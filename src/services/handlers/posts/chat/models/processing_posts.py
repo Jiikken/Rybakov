@@ -13,7 +13,7 @@ class CommandsForPostsInChat:
 
     """
     @staticmethod
-    def enter_post_chat(chat_id: int, user_id: int, event, content_chat: int = 5, admin_chat: int = 1):
+    def enter_post_chat(chat_id: int, user_id: int, event, content_chat: int = 2, admin_chat: int = 1):
         """
         Метод для отправки постов
 

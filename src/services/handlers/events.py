@@ -16,7 +16,9 @@ class HandlerEvents:
             if event.from_chat:
                 handler_chat_messages.handler_chat_message(msg, user_id, chat_id, event)
             elif event.from_user:
-                handler_ls_messages.handler_ls_messages(msg, user_id, chat_id, event)
+                print(1)
+                handler_ls_messages.handler_ls_message(msg, user_id, chat_id, event)
+                print(133)
         except Exception as e:
             logging.error(f"Ошибка при обработке события: {e}\n{traceback.format_exc()}")
 
