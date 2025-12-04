@@ -159,7 +159,6 @@ class Statistics(GoogleSheets):
 
         # Перебор всех редакторов
         for index, redactor_id in enumerate(redactors.ids):
-            print(index, redactor_id, redactors.ids)
             redactor_id = redactor_id.strip()
             if redactor_id.isdigit():
 
