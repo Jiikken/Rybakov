@@ -32,3 +32,4 @@ class SheetsData:
     bot_sheet: Worksheet = field(default_factory=str)
     work_sheet: Worksheet = field(default_factory=str)
     stability: Worksheet = field(default_factory=str)
+    test: Worksheet = field(default_factory=str)
