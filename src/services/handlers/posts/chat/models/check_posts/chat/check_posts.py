@@ -15,6 +15,14 @@ class CommandsModelChat:
     """
     @staticmethod
     def approved_post_chat(chat_id: int, msg: str, content_chat: int = 5, bank_content: int = 4):
+        """
+        Одобрение поста
+
+        :param chat_id: ID чата, куда прислано сообщение
+        :param msg: Текст сообщения
+        :param content_chat: ID чата для отправки контента, по умолчанию 5
+        :param bank_content: ID чата для хранения контента, по умолчанию 4
+        """
         message_id = info_about_posts_in_chat.get_post_id_from_message(chat_id, msg)
 
         if message_id > 0:
@@ -48,6 +56,14 @@ class CommandsModelChat:
 
     @staticmethod
     def no_approved_post_chat(chat_id: int, msg: str, type: int, content_chat: int = 5):
+        """
+        Отклонение поста
+
+        :param chat_id: ID чата, куда прислано сообщение
+        :param msg: Текст сообщения
+        :param type: Причина по которой пост отклонён (1 - несмешно, 2 - плагиат, 3 - непрезентабельно)
+        :param content_chat: ID чата для отправки контента, по умолчанию 5
+        """
         message_id = info_about_posts_in_chat.get_post_id_from_message(chat_id, msg)
 
         if message_id > 0:
@@ -82,6 +98,15 @@ class CommandsModelChat:
 
     @staticmethod
     def personal_response_for_chat(chat_id: int, msg: str, user_id: int, content_chat: int = 5):
+        """
+        Персональный ответ пользователю
+
+        :param chat_id: ID чата, куда прислано сообщение
+        :param msg: Текст сообщения
+        :param user_id: ID пользователя, от которого пришло сообщение
+        :param content_chat: ID чата для отправки контента, по умолчанию 5
+        :return:
+        """
         message_id = info_about_posts_in_chat.get_post_id_from_message_for_personal_response(chat_id, msg)
         post_and_user.add_personal_response_to_post(message_id, user_id)
 
