@@ -55,7 +55,7 @@ class SpreadsheetManager(GoogleSheets):
         return SheetsData(
             stats=stats_sheet,
             bot_sheet=bot_sheet,
-            redactors_sheet=redactors_work_sheet,
+            work_sheet=redactors_work_sheet,
             stability=stability
         )
 

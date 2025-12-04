@@ -30,5 +30,5 @@ class SheetsData:
     """Структурированные таблицы"""
     stats: Worksheet = field(default_factory=str)
     bot_sheet: Worksheet = field(default_factory=str)
-    redactors_sheet: Worksheet = field(default_factory=str)
+    work_sheet: Worksheet = field(default_factory=str)
     stability: Worksheet = field(default_factory=str)
