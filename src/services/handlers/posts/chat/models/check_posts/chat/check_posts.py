@@ -13,8 +13,7 @@ class CommandsModelChat:
     Модели команд для проверки постов
 
     """
-    @staticmethod
-    def approved_post_chat(chat_id: int, msg: str, content_chat: int = 5, bank_content: int = 4):
+    def approved_post_chat(self, chat_id: int, msg: str, content_chat: int = 5, bank_content: int = 4):
         """
         Одобрение поста
 
@@ -43,8 +42,7 @@ class CommandsModelChat:
                 user_id = post_and_user.get_user_by_post(message_id, chat_id)
                 posts_google_sheets.summ_approved_posts(user_id, chat_id)
 
-                post_and_user.remove_post_to_user(message_id, chat_id)
-                posts_data_base.remove_post_from_db(message_id, chat_id)
+                self._user_remove_from_db(message_id, chat_id)
 
                 Senders.sender(content_chat,
                        f"Пост #{message_id} был одобрен!\n\nВ ближайшее время он будет опубликован",
@@ -54,8 +52,7 @@ class CommandsModelChat:
         else:
             Senders.sender(chat_id, "Номер поста должен быть больше нуля")
 
-    @staticmethod
-    def no_approved_post_chat(chat_id: int, msg: str, type: int, content_chat: int = 5):
+    def no_approved_post_chat(self, chat_id: int, msg: str, type: int, content_chat: int = 5):
         """
         Отклонение поста
 
@@ -77,8 +74,7 @@ class CommandsModelChat:
                 if posts_inspection > 0:
                     posts_data_base.change_posts_inspection(False, chat_id)
 
-                post_and_user.remove_post_to_user(message_id, chat_id)
-                posts_data_base.remove_post_from_db(message_id, chat_id)
+                self._user_remove_from_db(message_id, chat_id)
 
                 if type == 1:
                     Senders.sender(content_chat,
@@ -96,8 +92,7 @@ class CommandsModelChat:
         else:
             Senders.sender(chat_id, "Номер поста должен быть больше нуля")
 
-    @staticmethod
-    def personal_response_for_chat(chat_id: int, msg: str, user_id: int, content_chat: int = 5):
+    def personal_response_for_chat(self, chat_id: int, msg: str, user_id: int, content_chat: int = 5):
         """
         Персональный ответ пользователю
 
@@ -105,7 +100,6 @@ class CommandsModelChat:
         :param msg: Текст сообщения
         :param user_id: ID пользователя, от которого пришло сообщение
         :param content_chat: ID чата для отправки контента, по умолчанию 5
-        :return:
         """
         message_id = info_about_posts_in_chat.get_post_id_from_message_for_personal_response(chat_id, msg)
         post_and_user.add_personal_response_to_post(message_id, user_id)
@@ -119,8 +113,7 @@ class CommandsModelChat:
                 response = info_about_posts_in_chat.wait_for_user_input(chat_id, message_id)
                 post_and_user.remove_personal_response_to_post(message_id)
 
-                post_and_user.remove_post_to_user(message_id, chat_id)
-                posts_data_base.remove_post_from_db(message_id, chat_id)
+                self._user_remove_from_db(message_id, chat_id)
 
                 if response:
                     Senders.sender(chat_id, f"Персональный ответ на пост #{message_id} был отправлен")
@@ -129,13 +122,20 @@ class CommandsModelChat:
                     if posts_inspection > 0:
                         posts_data_base.change_posts_inspection(False, chat_id)
 
-                    midd = json.dumps(
-                        {"peer_id": 2000000000 + content_chat, "conversation_message_ids": message_id,
-                         "is_reply": False})
+                    midd = json.dumps({"peer_id": 2000000000 + content_chat, "conversation_message_ids": message_id,"is_reply": False})
                     Senders.sender(content_chat, f"Проверяющий дал персональный ответ на пост #{message_id}: {response}",
                            f"{midd}")
 
         else:
             Senders.sender(chat_id, "Номер поста должен быть больше нуля")
 
-    
+    @staticmethod
+    def _user_remove_from_db(message_id: int, chat_id: int):
+        """
+        Удаление связи пользователя с базой данных
+
+        :param message_id: ID сообщения
+        :param chat_id: ID чата куда отправлено сообщение
+        """
+        post_and_user.remove_post_to_user(message_id, chat_id)
+        posts_data_base.remove_post_from_db(message_id, chat_id)
