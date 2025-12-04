@@ -10,8 +10,8 @@ class Cfg:
     def __init__(self):
         """Основные переменные для работы с ботом"""
         try:
-            self.env_path = os.path.join(os.path.dirname(__file__), "..", "secrets", ".env")
-            load_dotenv(dotenv_path=self.env_path)
+            self._env_path = os.path.join(os.path.dirname(__file__), "..", "secrets", ".env")
+            load_dotenv(dotenv_path=self._env_path)
             self.vk_token = os.getenv("VK_TOKEN")
             self.group_id = 228911906
             self.db_path = os.path.join(os.path.dirname(__file__), "..", "data", "data.db")

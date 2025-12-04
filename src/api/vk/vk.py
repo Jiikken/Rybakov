@@ -8,6 +8,7 @@ from src.config import config
 
 
 class MyLongPoll(VkBotLongPoll):
+    """Прослушка событий в чатах"""
     def listen(self):
         while True:
             try:
