@@ -182,14 +182,13 @@ class Statistics(GoogleSheets):
         try:
             self.rate_limit()
 
-            threading.Thread(target=self._reset_statistics_thread, daemon=True).start()
+            threading.Thread(target=self._reset_statistics_thread, args=(chat_id,), daemon=True).start()
 
-            Senders.sender(chat_id, "Статистика обнулена")
         except Exception as e:
             Senders.sender(chat_id, f"Произошла ошибка при обращении к методу")
             logging.error(f"Ошибка при сбросе статистики: {e}\n{traceback.format_exc()}")
 
-    def _reset_statistics_thread(self):
+    def _reset_statistics_thread(self, chat_id: int):
         """Работа с таблицами в отдельном потоке"""
         sheets = self.manager.sheets
 
@@ -207,5 +206,7 @@ class Statistics(GoogleSheets):
         # Заполняем нулями
         zero_matrix = [[0] * cols for _ in range(rows)]
         sheets.stability.update("C2:AH", zero_matrix)
+
+        Senders.sender(chat_id, "Статистика обнулена")
 
 statistics_from_gs = Statistics()
