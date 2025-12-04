@@ -9,6 +9,15 @@ from src.utils.keyboards import Keyboards
 class CommandsForPostsInChat:
     @staticmethod
     def enter_post_chat(chat_id: int, user_id: int, event, content_chat: int = 5, admin_chat: int = 1):
+        """
+        Метод для отправки постов
+
+        :param chat_id: ID чата, куда было прислано сообщение
+        :param user_id: ID пользователя, от кого поступило сообщение
+        :param event: Событие
+        :param content_chat: ID чата для контента, по умолчанию 5
+        :param admin_chat: ID чата для проверки контента, по умолчанию 1
+        """
         if posts_google_sheets.inactive_user(user_id, chat_id):
             Senders.sender(chat_id,
                    "На данный момент, я не могу рассмотреть от Вас материал, так как Вы находитесь в неактиве")

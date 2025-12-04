@@ -8,6 +8,14 @@ from src.utils.logs import logging
 
 class HandlerCommandsForPostsInChat(CommandsPosts):
     def handler_commands_for_posts(self, msg: str, user_id: int, chat_id: int, event: str):
+        """
+        Обработчик сообщений для отправки постов (чаты)
+
+        :param msg: Текст сообщения
+        :param user_id: ID пользователя, отправившего сообщение
+        :param chat_id: ID чата, куда было прислано сообщение
+        :param event: Событие
+        """
         forward_message = self._find_command(msg)
 
         if forward_message:
@@ -32,6 +40,12 @@ class HandlerCommandsForPostsInChat(CommandsPosts):
                 Senders.sender(chat_id, f"Данное действие недоступно в текущей беседе")
 
     def _find_command(self, msg: str) -> str:
+        """
+        Поиск команды в сообщении пользователя
+
+        :param msg: Текст сообщения
+        :return: string
+        """
         forward_message = None
 
         for cmd in self.commands_for_posts_in_chat:
@@ -47,6 +61,16 @@ class HandlerCommandsForPostsInChat(CommandsPosts):
 
     @staticmethod
     def _fill_dictionary(command: dict, chat_id: int, msg: str, user_id: int, event: str) -> dict:
+        """
+        Заполнение словаря параметрами
+
+        :param command:
+        :param chat_id:
+        :param msg:
+        :param user_id:
+        :param event:
+        :return: dictionary
+        """
         params = {}
 
         for param in command["params"]:
