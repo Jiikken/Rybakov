@@ -13,10 +13,10 @@ class HandlerChatMessages(CommandsInChat):
         """
         Обработчик сообщений в чате
 
-        :param msg:
+        :param msg: Сообщение события
+        :param chat_id: ID чата, где произошло событие
         :param user_id:
-        :param chat_id:
-        :param event:
+        :param event: Событие
 
         """
         forward_command = self._find_command(msg, user_id, chat_id, event)
@@ -39,10 +39,10 @@ class HandlerChatMessages(CommandsInChat):
         """
         Поиск команды в сообщении пользователя
 
-        :param msg:
-        :param user_id:
-        :param chat_id:
-        :param event:
+        :param chat_id: ID чата, где произошло событие
+        :param user_id: ID пользователя, от кого произошло событие
+        :param msg: Сообщение события
+        :param event: Событие
 
         :return: string
         """
@@ -68,11 +68,11 @@ class HandlerChatMessages(CommandsInChat):
         """
         Заполнение словаря параметрами
 
-        :param command:
-        :param chat_id:
-        :param msg:
-        :param user_id:
-        :param event:
+        :param command: Команда, которую прописал пользователь
+        :param chat_id: ID чата, где произошло событие
+        :param user_id: ID пользователя, от кого произошло событие
+        :param msg: Сообщение события
+        :param event: Событие
 
         :return: dictionary
         """

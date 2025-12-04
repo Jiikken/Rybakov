@@ -11,6 +11,13 @@ from src.utils.keyboards import Keyboards
 
 class HandlerLSMessages(CommandsInLS):
     def handler_ls_messages(self, msg: str, user_id: int, event: str):
+        """
+        Обработчик сообщений в ЛС
+
+        :param user_id: ID пользователя, от которого произошло событие
+        :param msg: Сообщение из события
+        :param event: Событие
+        """
         forward_message = self._find_command(msg)
 
         if forward_message:
@@ -29,6 +36,12 @@ class HandlerLSMessages(CommandsInLS):
             Senders.sender_in_ls(user_id, f"Здравствуйте, {Users.info_user(user_id)}\n\nХотите чебурек?", keyboard=Keyboards.cheburek())
 
     def _find_command(self, msg: str) -> str:
+        """
+        Поиск команды из сообщения пользователя
+
+        :param msg: Сообщение из события
+        :return: string
+        """
         forward_message = None
 
         for cmd in self.commands_for_posts_admin:
