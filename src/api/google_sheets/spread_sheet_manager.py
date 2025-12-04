@@ -53,12 +53,14 @@ class SpreadsheetManager:
         bot_sheet = self._gs.get_sheet("Информация для бота")
         redactors_work_sheet = self._gs.get_sheet("Работа")
         stability = self._gs.get_sheet("Стабильность")
+        test = self._gs.get_sheet("Грязь")
 
         return SheetsData(
             stats=stats_sheet,
             bot_sheet=bot_sheet,
             work_sheet=redactors_work_sheet,
-            stability=stability
+            stability=stability,
+            test=test
         )
 
     def _load_columns(self) -> RedactorsData:
