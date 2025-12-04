@@ -6,8 +6,15 @@ from src.services.models.senders import Senders
 
 
 class Users(Senders):
-    def give_user_id(self, chat_id, msg, event):
-        """Получение chat_id пользователя из команды(Для добавления/удаления администраторов)"""
+    def give_user_id(self, chat_id: int, msg: str, event) -> int:
+        """
+        Получение chat_id пользователя из команды(Для добавления/удаления администраторов)
+
+        :param chat_id: ID чата
+        :param msg: Текст сообщения
+        :param event: Событие
+        :return: int
+        """
         try:
             if "id" in msg:
                 first = msg.split(" ")[1]
@@ -22,14 +29,18 @@ class Users(Senders):
         except IndexError:
             self.sender(chat_id,
                    f"Команда введена не корректно. Формат команды:\n*Команда* *ID пользователя/тег пользователя/ответ на сообщение пользователя*")
-            return
         except Exception as e:
             self.sender(chat_id, f"Произошла ошибка при обращении к методу")
             logging.error(f"Произошла ошибка при получении ID пользователя из команды: {e}\n{traceback.format_exc()}")
 
     @staticmethod
-    def info_user(user_id):
-        """Получение имени и фамилии пользователя"""
+    def info_user(user_id: int) -> str:
+        """
+        Получение имени и фамилии пользователя
+
+        :param user_id: ID пользователя о ком нужно узнать информацию
+        :return: string
+        """
         try:
             user_info = VkConnection.vk_api.users.get(user_ids=user_id)[0]
             first_name = user_info['first_name']
