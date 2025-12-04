@@ -1,11 +1,16 @@
 import logging
 import traceback
 
-from src.services.models.senders import Senders
 from src.api.google_sheets.google_sheets import GoogleSheets
+from src.services.models.senders import Senders
+from src.api.google_sheets.spread_sheet_manager import SpreadsheetManager
 
 
-class Posts(GoogleSheets):
+class Posts(GoogleSheets, SpreadsheetManager):
+    def __init__(self):
+        super().__init__()
+        self.manager = SpreadsheetManager().create_manager()
+
     def summ_posts(self, user_id: int, chat_id: int = 2):
         """Метод для статистики количества постов отправленных от пользователя"""
         try:
@@ -15,7 +20,7 @@ class Posts(GoogleSheets):
             days = self.manager.days
 
             redactors_ids = redactors.ids
-            day_reset_stats = days.day_reset_stats
+            day_reset_stats = days.date_reset_stats
             days_reset_stats = days.days_reset_stats
 
             for index, redactor_id in enumerate(redactors_ids):
@@ -41,7 +46,7 @@ class Posts(GoogleSheets):
             redactors = self.manager.redactors_info
 
             redactors_ids = redactors.ids
-            approved_posts = int(redactors.approved_posts + 1)
+            approved_posts = int(sheets.bot_sheet.row_values(1).index("Одобренные посты") + 1)
 
             for i, value in enumerate(redactors_ids):
                 if str(user_id) == str(value):
@@ -64,13 +69,13 @@ class Posts(GoogleSheets):
             sheets = self.manager.sheets
             days = self.manager.days
 
-            percent_public_posts = sheets["bot_sheet"].acell("B31").value
+            percent_public_posts = sheets.bot_sheet.acell("B31").value
             days_since_reset_stats = days.days_since_reset_stats
             date_reset_stats = days.date_reset_stats
-            posts_public_now = sheets["bot_sheet"].acell("B34").value
-            all_posts_public = sheets["bot_sheet"].acell("B30").value
-            photo_mat = sheets["bot_sheet"].acell("B28").value
-            video_mat = sheets["bot_sheet"].acell("B29").value
+            posts_public_now = sheets.bot_sheet.acell("B34").value
+            all_posts_public = sheets.bot_sheet.acell("B30").value
+            photo_mat = sheets.bot_sheet.acell("B28").value
+            video_mat = sheets.bot_sheet.acell("B29").value
 
             Senders.sender(chat_id, f"Количество опубликованных постов за следующее количество дней: {days_since_reset_stats}, с момента последнего сброса статистики ({date_reset_stats}) — {posts_public_now} из {all_posts_public} ({percent_public_posts}%)\n\nФотоматериал: {photo_mat}\nВидеоматериал: {video_mat}")
         except Exception as e:

@@ -1,14 +1,13 @@
 import logging
+import time
 import traceback
 from typing import Optional
 
-import time
 import gspread
 from google.oauth2.service_account import Credentials
 from gspread import Worksheet
 from vk_api import ApiError
 
-from src.api.google_sheets.spread_sheet_manager import SpreadsheetManager
 from src.config import config
 
 
@@ -25,8 +24,6 @@ class GoogleSheets:
             logging.info(f"Подключение к Google Sheets успешно")
             self._last_request_time = 0
             self._min_interval = 1.0
-
-            self.manager = SpreadsheetManager()
         except Exception as e:
             logging.error(f"Произошла ошибка при подключении к Google Sheets: {e}\n{traceback.format_exc()}")
 
@@ -54,6 +51,8 @@ class GoogleSheets:
                 else:
                     raise
 
-    def _get_sheet(self, sheet_name: Optional[str] = None) -> Worksheet:
+    def get_sheet(self, sheet_name: Optional[str] = None) -> Worksheet:
         """Получение таблицы по названию"""
         return self._client.open(config.spreadsheetname).worksheet(sheet_name if sheet_name else config.default_sheet_name)
+
+google_sheets = GoogleSheets()

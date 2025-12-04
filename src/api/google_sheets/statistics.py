@@ -5,10 +5,15 @@ from datetime import datetime
 from typing import Optional
 
 from src.api.google_sheets.google_sheets import GoogleSheets
+from src.api.google_sheets.spread_sheet_manager import SpreadsheetManager
 from src.services.models.senders import Senders
 
 
-class Statistics(GoogleSheets):
+class Statistics(GoogleSheets, SpreadsheetManager):
+    def __init__(self):
+        super().__init__()
+        self.manager = SpreadsheetManager().create_manager()
+
     def redactors_statistics(self, msg: Optional[str], chat_id: int):
         """Получение статистики редакторов"""
         try:
