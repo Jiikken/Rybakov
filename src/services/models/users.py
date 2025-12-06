@@ -1,7 +1,7 @@
 import logging
 import traceback
 
-from src.api.vk.vk import VkConnection
+from src.api.vk.vk import vk_connect
 from src.services.models.senders import Senders
 
 
@@ -42,7 +42,7 @@ class Users(Senders):
         :return: string
         """
         try:
-            user_info = VkConnection.vk_api.users.get(user_ids=user_id)[0]
+            user_info = vk_connect.vk_api.users.get(user_ids=user_id)[0]
             first_name = user_info['first_name']
             last_name = user_info['last_name']
         except Exception as e:

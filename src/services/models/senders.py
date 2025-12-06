@@ -4,7 +4,7 @@ from typing import Optional
 
 from vk_api import ApiError
 
-from src.api.vk.vk import VkConnection
+from src.api.vk.vk import vk_connect
 
 
 class Senders:
@@ -19,7 +19,7 @@ class Senders:
         :param keyboard: Клавиатура для сообщения
         """
         try:
-            VkConnection.vk_session.method('messages.send', {'chat_id': chat_id, 'message': text, 'random_id': 0, 'forward': mid, 'keyboard': keyboard})
+            vk_connect.vk_session.method('messages.send', {'chat_id': chat_id, 'message': text, 'random_id': 0, 'forward': mid, 'keyboard': keyboard})
         except ApiError as a:
             if a.code == 100:
                 Senders.sender(chat_id, f"Перешлите это сообщение Кириллу")
@@ -39,7 +39,7 @@ class Senders:
         :param attachment: Вложение в сообщение
         """
         try:
-            VkConnection.vk_session.method('messages.send', {'user_id': user_id, 'message': text, 'random_id': 0, 'attachment': attachment, 'forward_messages': mid, 'keyboard': keyboard})
+            vk_connect.vk_session.method('messages.send', {'user_id': user_id, 'message': text, 'random_id': 0, 'attachment': attachment, 'forward_messages': mid, 'keyboard': keyboard})
         except Exception as e:
             Senders.sender(user_id, f"Произошла ошибка при обращении к методу")
             logging.error(f"Произошла ошибка при отправке сообщения(sender_in_ls): {e}\n{traceback.format_exc()}")
@@ -55,7 +55,7 @@ class Senders:
         :param keyboard: Клавиатура для сообщения
         """
         try:
-            VkConnection.vk_session.method('messages.send', {'chat_id': chat_id, 'message': text, 'random_id': 0, 'forward_messages': mid, 'keyboard': keyboard})
+            vk_connect.vk_session.method('messages.send', {'chat_id': chat_id, 'message': text, 'random_id': 0, 'forward_messages': mid, 'keyboard': keyboard})
         except Exception as e:
             Senders.sender(chat_id, f"Произошла ошибка при обращении к методу")
             logging.error(f"Произошла ошибка при отправке сообщения(resend_in_ls): {e}\n{traceback.format_exc()}")

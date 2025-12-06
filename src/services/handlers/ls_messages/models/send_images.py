@@ -2,7 +2,7 @@ import traceback
 
 from vk_api.upload import VkUpload
 
-from src.api.vk.vk import VkConnection
+from src.api.vk.vk import vk_connect
 from src.services.models.senders import Senders
 from src.utils.logs import logging
 
@@ -18,7 +18,7 @@ class SendImagesModel:
         try:
             # Загружаем фото на сервер ВК
             cheburk = "Rybakov/src/photos/чебурек.jpg"
-            photo = VkUpload(VkConnection.vk_session).photo_messages(cheburk)[0]
+            photo = VkUpload(vk_connect.vk_session).photo_messages(cheburk)[0]
             attachment = f"photo{photo['owner_id']}_{photo['id']}"
 
             # Отправляем сообщение с фото
@@ -37,7 +37,7 @@ class SendImagesModel:
         try:
             # Загружаем фото на сервер ВК
             cheburk = "Rybakov/src/photos/дикий огурец.jpg"
-            photo = VkUpload(VkConnection.vk_session).photo_messages(cheburk)[0]
+            photo = VkUpload(vk_connect.vk_session).photo_messages(cheburk)[0]
             attachment = f"photo{photo['owner_id']}_{photo['id']}"
 
             # Отправляем сообщение с фото
