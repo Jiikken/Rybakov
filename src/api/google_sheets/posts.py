@@ -15,7 +15,7 @@ class Posts(GoogleSheets):
             days = self.manager.days
 
             redactors_ids = redactors.ids
-            day_reset_stats = days.date_reset_stats
+            day_reset_stats = days.days_since_reset_stats
             days_reset_stats = days.days_reset_stats
 
             for index, redactor_id in enumerate(redactors_ids):
@@ -24,11 +24,14 @@ class Posts(GoogleSheets):
                 if redactor_id.isdigit():
                     if str(user_id) == str(redactor_id):
                         for i in days_reset_stats:
-                            if day_reset_stats.value == i:
-                                current_count = int(sheets.stability.cell(index + 2, int(i) + 2).value)
+                            if str(day_reset_stats) == str(i):
+                                current_count = int(sheets.stability.cell(index + 2, int(i) + 2).value if sheets.stability.cell(index + 2, int(i) + 2).value is not None else 0)
+
                                 new_value = current_count + 1
 
                                 sheets.stability.update_cell(index + 2, int(i) + 2, new_value)
+
+                                break
 
         except Exception as e:
             Senders.sender(chat_id, f"Произошла ошибка при обращении к методу")
@@ -94,7 +97,8 @@ class Posts(GoogleSheets):
 
                 if str(user_id) == str(value):
 
-                    current_count = (sheets.stats.cell(i + 1, 11).value or "").lower()
+                    current_count = (sheets.stats.cell(i + 2, 11).value or "").lower()
+                    print(current_count, value, i)
                     if current_count == "неактив":
                         return True
                     else:
