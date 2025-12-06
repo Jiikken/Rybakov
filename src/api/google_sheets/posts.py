@@ -98,7 +98,6 @@ class Posts(GoogleSheets):
                 if str(user_id) == str(value):
 
                     current_count = (sheets.stats.cell(i + 2, 11).value or "").lower()
-                    print(current_count, value, i)
                     if current_count == "неактив":
                         return True
                     else:
